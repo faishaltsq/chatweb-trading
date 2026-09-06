@@ -307,14 +307,29 @@ export async function fetchPriceSummary(pair: string): Promise<string | null> {
       ? `Rp ${meta.price.toLocaleString('id-ID')}`
       : `$${meta.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}`;
 
-    return `[DATA PASAR REAL-TIME TERVERIFIKASI - GUNAKAN ANGKA INI UNTUK LEVEL ENTRY/SL/TP]
+    const lastDate = new Date(last.time * 1000).toISOString().slice(0, 10);
+
+    const isGold = meta.symbol === 'GC=F';
+    const isIndex = meta.symbol.startsWith('^');
+
+    let notes = '';
+    if (meta.isDailyOnly) {
+      notes += '• Catatan: Saham IDX data harian resmi (EOD).\n';
+    }
+    if (isGold) {
+      notes += '• Catatan: Data emas menggunakan harga Gold Futures (COMEX). Bisa berselisih $20-$50 dari harga Spot XAU/USD retail broker karena contango/spread.\n';
+    }
+    if (isIndex) {
+      notes += '• Catatan: Indeks resmi bursa, data berjarak 10-15 menit delay dari live feed.\n';
+    }
+
+    return `[DATA PASAR TERVERIFIKASI - GUNAKAN ANGKA INI UNTUK LEVEL ENTRY/SL/TP]
 Aset: ${meta.displayName} (${meta.symbol})
-Harga Terkini: ${formattedPrice} (${changeSign}${meta.changePercent ?? 0}%)
-Candle Terakhir: Open ${last.open}, High ${last.high}, Low ${last.low}, Close ${last.close}
+Harga Terakhir: ${formattedPrice} (${changeSign}${meta.changePercent ?? 0}%) [per ${lastDate}]
+Candle Harian Terakhir: Open ${last.open}, High ${last.high}, Low ${last.low}, Close ${last.close}
 ${prev ? `Candle Sebelumnya: Close ${prev.close}` : ''}
 Range 30 Hari: Low ${low30} — High ${high30}
-${meta.isDailyOnly ? 'Catatan: Saham IDX hanya tersedia data harian (EOD).' : ''}
-PENTING: Gunakan level harga di atas sebagai acuan mutlak. JANGAN gunakan harga lama dari memori pelatihanmu!`;
+${notes}PENTING: Gunakan level harga di atas sebagai acuan mutlak. JANGAN gunakan harga lama dari memori pelatihanmu! Jika harga broker user berselisih tipis (misal Gold spot vs futures), fokus pada struktur teknikal dan level relatif.`;
   } catch {
     return null;
   }
