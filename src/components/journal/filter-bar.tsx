@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Search, Filter, X } from 'lucide-react';
-import { PAIRS, STATUSES, DIRECTIONS } from '@/lib/journal/constants';
+import { STATUSES, DIRECTIONS } from '@/lib/journal/constants';
 
 export interface FilterState {
   pair: string;
@@ -20,9 +20,10 @@ export const emptyFilter: FilterState = {
 interface FilterBarProps {
   filter: FilterState;
   onChange: (f: FilterState) => void;
+  availablePairs?: string[];
 }
 
-export default function FilterBar({ filter, onChange }: FilterBarProps) {
+export default function FilterBar({ filter, onChange, availablePairs = [] }: FilterBarProps) {
   const [expanded, setExpanded] = useState(false);
   const hasFilter = Object.values(filter).some((v) => v !== '');
 
@@ -74,7 +75,7 @@ export default function FilterBar({ filter, onChange }: FilterBarProps) {
               <select value={filter.pair} onChange={(e) => set('pair', e.target.value)}
                 className="w-full bg-[var(--bg-elevated)] border hairline border-[var(--border)] rounded-xl px-2.5 py-1.5 min-h-[36px] text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent)] transition-colors">
                 <option value="">All Pairs</option>
-                {PAIRS.map((p) => <option key={p}>{p}</option>)}
+                {availablePairs.map((p) => <option key={p}>{p}</option>)}
               </select>
             </div>
             <div>

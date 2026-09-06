@@ -1,8 +1,3 @@
-export const PAIRS = [
-  'XAUUSD', 'EURUSD', 'GBPUSD', 'USDJPY', 'AUDUSD', 'USDCAD', 'NZDUSD',
-  'USDCHF', 'GBPJPY', 'EURJPY', 'EURGBP', 'BTCUSD', 'ETHUSD', 'US30',
-  'NAS100', 'SPX500', 'USOIL', 'XAGUSD',
-];
 
 export const TIMEFRAMES = ['M1', 'M5', 'M15', 'M30', 'H1', 'H4', 'D1', 'W1', 'MN'];
 
@@ -37,7 +32,7 @@ export type TradeFormData = {
 export function emptyTrade(): TradeFormData {
   return {
     date: new Date().toISOString().slice(0, 10),
-    pair: 'XAUUSD',
+    pair: '',
     direction: 'BUY',
     timeframe: 'M15',
     entryPrice: null,

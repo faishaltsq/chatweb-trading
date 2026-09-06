@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import { X, Plus, Trash2, Star, Upload } from 'lucide-react';
 import {
-  PAIRS, TIMEFRAMES, STATUSES, DIRECTIONS, EMOTIONS,
+  TIMEFRAMES, STATUSES, DIRECTIONS, EMOTIONS,
   type TradeFormData, emptyTrade,
 } from '@/lib/journal/constants';
 
@@ -13,9 +13,10 @@ interface TradeModalProps {
   onSave: (data: TradeFormData) => void;
   initial?: TradeFormData;
   title?: string;
+  savedPairs?: string[];
 }
 
-export default function TradeModal({ open, onClose, onSave, initial, title }: TradeModalProps) {
+export default function TradeModal({ open, onClose, onSave, initial, title, savedPairs = [] }: TradeModalProps) {
   const [form, setForm] = useState<TradeFormData>(initial || emptyTrade());
   const [tagInput, setTagInput] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
@@ -86,10 +87,19 @@ export default function TradeModal({ open, onClose, onSave, initial, title }: Tr
               <input type="date" value={form.date} onChange={(e) => set('date', e.target.value)}
                 className="input-field" />
             </Field>
-            <Field label="Pair">
-              <select value={form.pair} onChange={(e) => set('pair', e.target.value)} className="input-field">
-                {PAIRS.map((p) => <option key={p}>{p}</option>)}
-              </select>
+            <Field label="Pair / Symbol">
+              <input
+                list="pair-suggestions"
+                value={form.pair}
+                onChange={(e) => set('pair', e.target.value.toUpperCase())}
+                className="input-field font-mono"
+                placeholder="XAUUSD, AAPL, BBRI..."
+                autoComplete="off"
+                spellCheck={false}
+              />
+              <datalist id="pair-suggestions">
+                {savedPairs.map((p) => <option key={p} value={p} />)}
+              </datalist>
             </Field>
             <Field label="Direction">
               <select value={form.direction} onChange={(e) => set('direction', e.target.value)} className="input-field">

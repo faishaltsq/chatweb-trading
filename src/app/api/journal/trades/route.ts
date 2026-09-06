@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
   await db.insert(trades).values({
     id,
     date: body.date || today(),
-    pair: body.pair || 'XAUUSD',
+    pair: body.pair ? String(body.pair).trim().toUpperCase() : '',
     direction: body.direction || 'BUY',
     timeframe: body.timeframe || null,
     entryPrice: body.entryPrice ?? null,

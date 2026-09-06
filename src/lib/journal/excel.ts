@@ -126,10 +126,10 @@ export function downloadTemplate() {
 
   const sampleRows = [
     ['2026-09-01', 'XAUUSD', 'BUY', 'H1', 4380, 4360, '4420', 0.5, 'WIN', 200, 40, 'breakout', 'Demand zone retest entry, clean structure', 8, 'Confident'],
-    ['2026-09-02', 'EURUSD', 'SELL', 'M15', 1.0850, 1.0880, '1.0790', 1.0, 'WIN', 600, 60, 'pullback', 'Supply rejection confirmed on M15', 7, 'Calm'],
-    ['2026-09-03', 'XAUUSD', 'SELL', 'M5', 4450, 4470, '4410', 0.3, 'LOSS', -60, -20, 'counter-trend', 'Premature entry tanpa konfirmasi', 4, 'FOMO'],
-    ['2026-09-04', 'GBPUSD', 'BUY', 'H4', 1.3150, 1.3120, '1.3210', 0.5, 'BREAKEVEN', 0, 0, 'range', 'Moved SL to BE terlalu cepat', 6, 'Anxious'],
-    ['2026-09-05', 'XAUUSD', 'BUY', 'M15', 4415, 4395, '4460', 1.0, 'OPEN', '', '', 'flag-breakout', 'Menunggu trigger breakout', 7, 'Disciplined'],
+    ['2026-09-02', 'BBRI', 'BUY', 'D1', 4800, 4650, '5100', 100, 'WIN', 3000000, 300, 'pullback', 'Support MA200, volume spike', 7, 'Calm'],
+    ['2026-09-03', 'AAPL', 'SELL', 'H4', 195.50, 198.00, '190.00', 10, 'LOSS', -250, -2.5, 'counter-trend', 'Premature entry tanpa konfirmasi', 4, 'FOMO'],
+    ['2026-09-04', 'BTCUSD', 'BUY', 'H4', 62000, 60500, '65000', 0.1, 'BREAKEVEN', 0, 0, 'range', 'Moved SL to BE terlalu cepat', 6, 'Anxious'],
+    ['2026-09-05', 'EURUSD', 'SELL', 'M15', 1.0850, 1.0880, '1.0790', 1.0, 'OPEN', '', '', 'flag-breakout', 'Menunggu trigger breakout', 7, 'Disciplined'],
   ];
 
   const wsData = [headers, ...sampleRows];
@@ -138,10 +138,8 @@ export function downloadTemplate() {
   setColWidths(ws, [12, 10, 10, 10, 12, 12, 16, 8, 12, 10, 10, 20, 40, 8, 12]);
   freezeHeader(ws);
 
-  // Data validation — pair dropdown
-  const pairList = 'XAUUSD,EURUSD,GBPUSD,USDJPY,AUDUSD,USDCAD,NZDUSD,USDCHF,GBPJPY,EURJPY,EURGBP,BTCUSD,ETHUSD,US30,NAS100,SPX500,USOIL,XAGUSD';
+  // Data validation — pair kolom bebas diisi, tidak ada dropdown hardcoded
   ws['!dataValidation'] = [
-    { sqref: 'B2:B1000', type: 'list', formula1: `"${pairList}"`, showDropDown: true },
     { sqref: 'C2:C1000', type: 'list', formula1: '"BUY,SELL"', showDropDown: true },
     { sqref: 'D2:D1000', type: 'list', formula1: '"M1,M5,M15,M30,H1,H4,D1,W1,MN"', showDropDown: true },
     { sqref: 'I2:I1000', type: 'list', formula1: '"OPEN,WIN,LOSS,BREAKEVEN"', showDropDown: true },
@@ -156,7 +154,7 @@ export function downloadTemplate() {
     ['', ''],
     ['Kolom', 'Keterangan'],
     ['Date', 'Tanggal trade. Format: YYYY-MM-DD (contoh: 2026-09-01)'],
-    ['Pair', 'Instrumen trading. Pilih dari dropdown (XAUUSD, EURUSD, dll)'],
+    ['Pair', 'Instrumen trading / Ticker saham / Forex / Kripto (contoh: BBRI, AAPL, XAUUSD, BTCUSD)'],
     ['Direction', 'Arah trade: BUY atau SELL'],
     ['Timeframe', 'Timeframe chart saat analisa: M1, M5, M15, M30, H1, H4, D1, W1, MN'],
     ['Entry Price', 'Harga masuk posisi (angka tanpa simbol)'],

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSession } from 'next-auth/react';
 import { Plus, ArrowLeft, Download, Upload, FileSpreadsheet, ChevronUp, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import JournalTable from '@/components/journal/journal-table';
@@ -13,8 +14,10 @@ import ImportModal from '@/components/journal/import-modal';
 import { type Trade } from '@/lib/journal/schema';
 import { type CustomColumn } from '@/lib/journal/schema';
 import { type TradeFormData } from '@/lib/journal/constants';
+import AuthModal from '@/components/auth/auth-modal';
 
 export default function JournalPage() {
+  const { data: session, status } = useSession();
   const [trades, setTrades] = useState<Trade[]>([]);
   const [columns, setColumns] = useState<CustomColumn[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,6 +27,18 @@ export default function JournalPage() {
   const [filter, setFilter] = useState<FilterState>(emptyFilter);
   const [customVals, setCustomVals] = useState<Record<string, Record<string, string>>>({});
   const [showCharts, setShowCharts] = useState(false);
+  const [savedPairs, setSavedPairs] = useState<string[]>([]);
+
+  // Load saved custom pairs from localStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('journal_saved_pairs');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) setSavedPairs(parsed);
+      }
+    } catch { /* */ }
+  }, []);
 
   const fetchTrades = useCallback(async () => {
     try {
@@ -64,6 +79,22 @@ export default function JournalPage() {
     fetchColumns();
     fetchCustomValues();
   }, [fetchTrades, fetchColumns, fetchCustomValues]);
+
+  // Merge pairs from all trades (unfiltered) + saved custom pairs
+  const allPairs = useMemo(() => {
+    const fromTrades = trades.map((t) => t.pair).filter(Boolean);
+    const merged = Array.from(new Set([...savedPairs, ...fromTrades])).sort();
+    return merged;
+  }, [trades, savedPairs]);
+
+  // Persist new pairs to localStorage whenever allPairs grows
+  useEffect(() => {
+    if (allPairs.length === 0) return;
+    try {
+      localStorage.setItem('journal_saved_pairs', JSON.stringify(allPairs));
+      setSavedPairs(allPairs);
+    } catch { /* */ }
+  }, [allPairs]);
 
   async function handleSave(data: TradeFormData) {
     if (editTrade) {
@@ -175,6 +206,22 @@ export default function JournalPage() {
     };
   }
 
+  if (status === 'loading') {
+    return (
+      <div className="min-h-dvh bg-[var(--bg-root)] flex items-center justify-center">
+        <div className="text-[var(--text-muted)] text-sm">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!session?.user) {
+    return (
+      <div className="min-h-dvh bg-[var(--bg-root)] tv-grid-bg flex flex-col items-center justify-center p-4">
+        <AuthModal open canDismiss={false} onClose={() => {}} />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-dvh bg-[var(--bg-root)] text-[var(--text-primary)]">
       <header className="border-b hairline border-[var(--border)] glass sticky top-0 z-40 px-3 sm:px-6 py-3 sm:py-4">
@@ -225,7 +272,7 @@ export default function JournalPage() {
         <JournalStats trades={trades} />
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
-          <FilterBar filter={filter} onChange={setFilter} />
+          <FilterBar filter={filter} onChange={setFilter} availablePairs={allPairs} />
           <button
             onClick={() => setShowCharts(!showCharts)}
             className={`flex items-center justify-center gap-1.5 px-3.5 py-2 min-h-[38px] rounded-xl text-xs border hairline transition-all duration-200 flex-shrink-0 touch-manipulation ${
@@ -263,6 +310,7 @@ export default function JournalPage() {
         onSave={handleSave}
         initial={editTrade ? tradeToForm(editTrade) : undefined}
         title={editTrade ? 'Edit Trade' : 'New Trade'}
+        savedPairs={allPairs}
       />
 
       <ImportModal
