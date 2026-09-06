@@ -87,12 +87,10 @@ export default function JournalPage() {
     return merged;
   }, [trades, savedPairs]);
 
-  // Persist new pairs to localStorage whenever allPairs grows
   useEffect(() => {
     if (allPairs.length === 0) return;
     try {
       localStorage.setItem('journal_saved_pairs', JSON.stringify(allPairs));
-      setSavedPairs(allPairs);
     } catch { /* */ }
   }, [allPairs]);
 
