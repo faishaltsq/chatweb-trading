@@ -1,5 +1,5 @@
-// Yahoo Finance Market Data Fetcher
-// Universal mapper: IDX stocks, US stocks, Crypto, Forex, Indices
+// Yahoo Finance Market Data Fetcher + TradingView Scanner (Live Price)
+// Pipeline: TradingView Scanner (real-time price) → Yahoo Finance (candle history)
 
 export interface Candle {
   time: number; // UTCTimestamp in seconds (required by lightweight-charts v5)
@@ -25,6 +25,129 @@ export interface MarketMeta {
 export interface MarketDataResult {
   meta: MarketMeta;
   candles: Candle[];
+}
+
+// TradingView scanner symbol dictionary
+const TV_SCANNER_MAP: Record<string, string> = {
+  // Forex & Metals (Live spot prices)
+  XAUUSD: 'OANDA:XAUUSD',
+  GOLD: 'OANDA:XAUUSD',
+  XAGUSD: 'OANDA:XAGUSD',
+  SILVER: 'OANDA:XAGUSD',
+  EURUSD: 'OANDA:EURUSD',
+  GBPUSD: 'OANDA:GBPUSD',
+  USDJPY: 'OANDA:USDJPY',
+  AUDUSD: 'OANDA:AUDUSD',
+  USDCAD: 'OANDA:USDCAD',
+  NZDUSD: 'OANDA:NZDUSD',
+  USDCHF: 'OANDA:USDCHF',
+  GBPJPY: 'OANDA:GBPJPY',
+  EURJPY: 'OANDA:EURJPY',
+  EURGBP: 'OANDA:EURGBP',
+
+  // Crypto
+  BTCUSD: 'BINANCE:BTCUSDT',
+  BTC: 'BINANCE:BTCUSDT',
+  BTCUSDT: 'BINANCE:BTCUSDT',
+  ETHUSD: 'BINANCE:ETHUSDT',
+  ETH: 'BINANCE:ETHUSDT',
+  ETHUSDT: 'BINANCE:ETHUSDT',
+  SOLUSD: 'BINANCE:SOLUSDT',
+  SOL: 'BINANCE:SOLUSDT',
+  BNBUSD: 'BINANCE:BNBUSDT',
+  XRPUSD: 'BINANCE:XRPUSDT',
+
+  // Indices
+  NAS100: 'NASDAQ:NDX',
+  NASDAQ: 'NASDAQ:NDX',
+  NDX: 'NASDAQ:NDX',
+  SPX500: 'SP:SPX',
+  SPX: 'SP:SPX',
+  SP500: 'SP:SPX',
+  US30: 'DJ:DJI',
+  DJI: 'DJ:DJI',
+  DXY: 'TVC:DXY',
+
+  // Commodities
+  USOIL: 'NYMEX:CL1!',
+  OIL: 'NYMEX:CL1!',
+
+  // US Stocks
+  AAPL: 'NASDAQ:AAPL',
+  TSLA: 'NASDAQ:TSLA',
+  NVDA: 'NASDAQ:NVDA',
+  MSFT: 'NASDAQ:MSFT',
+  AMZN: 'NASDAQ:AMZN',
+  GOOGL: 'NASDAQ:GOOGL',
+  META: 'NASDAQ:META',
+  AMD: 'NASDAQ:AMD',
+  BABA: 'NYSE:BABA',
+
+  // IDX Stocks
+  BBCA: 'IDX:BBCA',
+  BBRI: 'IDX:BBRI',
+  BMRI: 'IDX:BMRI',
+  BBNI: 'IDX:BBNI',
+  TLKM: 'IDX:TLKM',
+  ASII: 'IDX:ASII',
+  GOTO: 'IDX:GOTO',
+  ANTM: 'IDX:ANTM',
+  UNVR: 'IDX:UNVR',
+  ADRO: 'IDX:ADRO',
+  BREN: 'IDX:BREN',
+};
+
+export interface TVScannerQuote {
+  close: number;
+  open?: number;
+  high?: number;
+  low?: number;
+  volume?: number;
+  change?: number;
+  change_abs?: number;
+}
+
+// Fetch live quote from TradingView Scanner API
+export async function fetchTradingViewPrice(rawPair: string): Promise<{ quote: TVScannerQuote; symbol: string } | null> {
+  const upper = rawPair.trim().toUpperCase().replace(/[^A-Z0-9.:_-]/g, '');
+  let tvSymbol = TV_SCANNER_MAP[upper];
+
+  if (!tvSymbol) {
+    if (upper.includes(':')) {
+      tvSymbol = upper;
+    } else if (/^[A-Z]{4}$/.test(upper)) {
+      // 4-letter unknown, try IDX
+      tvSymbol = `IDX:${upper}`;
+    } else if (/^[A-Z]{1,5}$/.test(upper)) {
+      // 1-5 letters, try NASDAQ then NYSE
+      tvSymbol = `NASDAQ:${upper}`;
+    } else {
+      tvSymbol = `OANDA:${upper}`;
+    }
+  }
+
+  const url = `https://scanner.tradingview.com/symbol?symbol=${encodeURIComponent(tvSymbol)}&fields=close,open,high,low,volume,change,change_abs&no_404=1`;
+
+  try {
+    const res = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      },
+      next: { revalidate: 10 }, // 10-second cache
+    });
+
+    if (!res.ok) return null;
+
+    const text = await res.text();
+    if (!text || text === 'null' || text === '404') return null;
+
+    const quote: TVScannerQuote = JSON.parse(text);
+    if (quote.close == null || isNaN(quote.close)) return null;
+
+    return { quote, symbol: tvSymbol };
+  } catch {
+    return null;
+  }
 }
 
 // Map pair string to Yahoo Finance ticker
@@ -287,49 +410,56 @@ export async function fetchCandles(pair: string, appInterval = '1D'): Promise<Ma
   }
 }
 
-// Quick price summary for Claude prompt injection (executes in < 1 sec)
+// Quick price summary for Claude prompt injection
+// Pipeline: TradingView Scanner (live spot price) → Yahoo Finance (candle history for S/R levels)
 export async function fetchPriceSummary(pair: string): Promise<string | null> {
   try {
-    const data = await fetchCandles(pair, '1D');
-    if (!data || data.candles.length === 0) return null;
+    // Step 1: Get real-time price from TradingView Scanner
+    const tvData = await fetchTradingViewPrice(pair);
 
-    const { meta, candles } = data;
-    const last = candles[candles.length - 1];
-    const prev = candles[candles.length - 2];
+    // Step 2: Get candle history from Yahoo Finance for S/R context
+    const yahooData = await fetchCandles(pair, '1D');
 
-    // Compute simple 30-candle support & resistance
-    const recent30 = candles.slice(-30);
-    const low30 = Math.min(...recent30.map((c) => c.low));
-    const high30 = Math.max(...recent30.map((c) => c.high));
+    // Need at least one source
+    if (!tvData && (!yahooData || yahooData.candles.length === 0)) return null;
 
-    const changeSign = (meta.changePercent ?? 0) >= 0 ? '+' : '';
-    const formattedPrice = meta.currency === 'IDR'
-      ? `Rp ${meta.price.toLocaleString('id-ID')}`
-      : `$${meta.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}`;
+    const { displayName, isDailyOnly } = resolveYahooSymbol(pair);
 
-    const lastDate = new Date(last.time * 1000).toISOString().slice(0, 10);
+    // Use TradingView live price (most accurate), fall back to Yahoo
+    const livePrice = tvData?.quote.close ?? yahooData?.meta.price ?? 0;
+    const liveOpen = tvData?.quote.open ?? yahooData?.candles[yahooData.candles.length - 1]?.open;
+    const liveHigh = tvData?.quote.high ?? yahooData?.candles[yahooData.candles.length - 1]?.high;
+    const liveLow = tvData?.quote.low ?? yahooData?.candles[yahooData.candles.length - 1]?.low;
+    const changePercent = tvData?.quote.change ?? yahooData?.meta.changePercent ?? 0;
+    const currency = yahooData?.meta.currency || 'USD';
+    const priceSource = tvData ? `TradingView (${tvData.symbol})` : `Yahoo Finance (${yahooData?.meta.symbol})`;
 
-    const isGold = meta.symbol === 'GC=F';
-    const isIndex = meta.symbol.startsWith('^');
+    // Compute 30-day support & resistance from Yahoo candle history
+    let rangeInfo = '';
+    if (yahooData && yahooData.candles.length >= 10) {
+      const recent30 = yahooData.candles.slice(-30);
+      const low30 = Math.min(...recent30.map((c) => c.low));
+      const high30 = Math.max(...recent30.map((c) => c.high));
+      rangeInfo = `Range 30 Hari: Low ${low30} — High ${high30}`;
+    }
+
+    const changeSign = changePercent >= 0 ? '+' : '';
+    const formattedPrice = currency === 'IDR'
+      ? `Rp ${livePrice.toLocaleString('id-ID')}`
+      : `$${livePrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}`;
 
     let notes = '';
-    if (meta.isDailyOnly) {
-      notes += '• Catatan: Saham IDX data harian resmi (EOD).\n';
-    }
-    if (isGold) {
-      notes += '• Catatan: Data emas menggunakan harga Gold Futures (COMEX). Bisa berselisih $20-$50 dari harga Spot XAU/USD retail broker karena contango/spread.\n';
-    }
-    if (isIndex) {
-      notes += '• Catatan: Indeks resmi bursa, data berjarak 10-15 menit delay dari live feed.\n';
+    if (isDailyOnly) {
+      notes += '• Saham IDX data harian resmi (EOD).\n';
     }
 
-    return `[DATA PASAR TERVERIFIKASI - GUNAKAN ANGKA INI UNTUK LEVEL ENTRY/SL/TP]
-Aset: ${meta.displayName} (${meta.symbol})
-Harga Terakhir: ${formattedPrice} (${changeSign}${meta.changePercent ?? 0}%) [per ${lastDate}]
-Candle Harian Terakhir: Open ${last.open}, High ${last.high}, Low ${last.low}, Close ${last.close}
-${prev ? `Candle Sebelumnya: Close ${prev.close}` : ''}
-Range 30 Hari: Low ${low30} — High ${high30}
-${notes}PENTING: Gunakan level harga di atas sebagai acuan mutlak. JANGAN gunakan harga lama dari memori pelatihanmu! Jika harga broker user berselisih tipis (misal Gold spot vs futures), fokus pada struktur teknikal dan level relatif.`;
+    return `[DATA PASAR REAL-TIME — GUNAKAN ANGKA INI UNTUK LEVEL ENTRY/SL/TP]
+Sumber: ${priceSource}
+Aset: ${displayName}
+Harga Terkini: ${formattedPrice} (${changeSign}${Number(changePercent).toFixed(2)}%)
+Candle Terakhir: Open ${liveOpen ?? '-'}, High ${liveHigh ?? '-'}, Low ${liveLow ?? '-'}, Close ${livePrice}
+${rangeInfo}
+${notes}PENTING: Gunakan level harga di atas sebagai acuan mutlak. JANGAN gunakan harga lama dari memori pelatihanmu! Fokus pada struktur teknikal dan level relatif.`;
   } catch {
     return null;
   }
