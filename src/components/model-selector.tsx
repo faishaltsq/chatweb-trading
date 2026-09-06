@@ -85,15 +85,15 @@ export default function ModelSelector({ value, onChange }: ModelSelectorProps) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/8 border hairline border-[var(--border-bright)] text-[var(--text-secondary)] hover:text-white transition-all duration-200 text-xs"
+        className="flex items-center gap-2 px-3 py-2 min-h-[36px] rounded-xl bg-white/[0.04] hover:bg-white/8 border hairline border-[var(--border-bright)] text-[var(--text-secondary)] hover:text-white transition-all duration-200 text-xs touch-manipulation"
       >
-        <ModelIcon icon={selected.icon} size={13} />
+        <ModelIcon icon={selected.icon} size={14} />
         <span className="max-w-[120px] truncate hidden sm:block">{selected.label}</span>
         <ChevronDown size={13} className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open && (
-        <div className="absolute top-full mt-2 right-0 w-72 bg-[var(--bg-elevated)] border hairline border-[var(--border-bright)] rounded-2xl shadow-2xl z-50 overflow-hidden animate-dropIn">
+        <div className="absolute top-full mt-2 right-0 w-[calc(100vw-28px)] sm:w-72 max-w-[320px] bg-[var(--bg-elevated)] border hairline border-[var(--border-bright)] rounded-2xl shadow-2xl z-50 overflow-hidden animate-dropIn">
           {MODELS.map((model) => (
             <button
               key={model.id}

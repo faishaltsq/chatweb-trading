@@ -177,48 +177,61 @@ export default function JournalPage() {
 
   return (
     <div className="min-h-dvh bg-[var(--bg-root)] text-[var(--text-primary)]">
-      <header className="border-b hairline border-[var(--border)] glass sticky top-0 z-40 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="p-1.5 rounded-xl hover:bg-white/8 text-[var(--text-secondary)] hover:text-white transition-colors">
+      <header className="border-b hairline border-[var(--border)] glass sticky top-0 z-40 px-3 sm:px-6 py-3 sm:py-4">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2.5 sm:gap-4">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="min-w-[38px] min-h-[38px] rounded-xl hover:bg-white/8 text-[var(--text-secondary)] hover:text-white transition-colors flex items-center justify-center touch-manipulation" title="Back to home">
               <ArrowLeft size={18} />
             </Link>
             <div>
-              <h1 className="text-lg font-bold text-[var(--text-primary)] tracking-tight">Trading Journal</h1>
-              <p className="text-[11px] text-[var(--text-muted)]">{trades.length} trades recorded</p>
+              <h1 className="text-base sm:text-lg font-bold text-[var(--text-primary)] tracking-tight">Trading Journal</h1>
+              <p className="text-[10px] sm:text-[11px] text-[var(--text-muted)]">{trades.length} trades recorded</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap justify-end">
             <ColumnManager columns={columns} onAdd={handleAddColumn} onDelete={handleDeleteColumn} />
-            <button onClick={handleTemplate}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs text-[var(--text-secondary)] hover:text-white hover:bg-white/5 border hairline border-[var(--border)] transition-colors">
-              <FileSpreadsheet size={14} /> Template
+            <button
+              onClick={handleTemplate}
+              title="Download Excel Template"
+              className="flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 min-h-[36px] rounded-xl text-xs text-[var(--text-secondary)] hover:text-white hover:bg-white/5 border hairline border-[var(--border)] transition-colors touch-manipulation"
+            >
+              <FileSpreadsheet size={14} /> <span className="hidden md:inline">Template</span>
             </button>
-            <button onClick={() => setImportOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs text-[var(--text-secondary)] hover:text-white hover:bg-white/5 border hairline border-[var(--border)] transition-colors">
-              <Upload size={14} /> Import
+            <button
+              onClick={() => setImportOpen(true)}
+              title="Import CSV"
+              className="flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 min-h-[36px] rounded-xl text-xs text-[var(--text-secondary)] hover:text-white hover:bg-white/5 border hairline border-[var(--border)] transition-colors touch-manipulation"
+            >
+              <Upload size={14} /> <span className="hidden md:inline">Import</span>
             </button>
-            <button onClick={handleExport}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs text-[var(--text-secondary)] hover:text-white hover:bg-white/5 border hairline border-[var(--border)] transition-colors">
-              <Download size={14} /> Export
+            <button
+              onClick={handleExport}
+              title="Export XLSX"
+              className="flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 min-h-[36px] rounded-xl text-xs text-[var(--text-secondary)] hover:text-white hover:bg-white/5 border hairline border-[var(--border)] transition-colors touch-manipulation"
+            >
+              <Download size={14} /> <span className="hidden md:inline">Export</span>
             </button>
-            <button onClick={() => { setEditTrade(null); setModalOpen(true); }}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent)]/85 text-white text-xs font-semibold transition-all duration-200 shadow-[0_0_16px_var(--accent-glow)]">
-              <Plus size={14} /> Add Trade
+            <button
+              onClick={() => { setEditTrade(null); setModalOpen(true); }}
+              className="flex items-center gap-1.5 px-3 sm:px-4 py-2 min-h-[36px] rounded-xl bg-[var(--accent)] hover:bg-[var(--accent)]/85 text-white text-xs font-semibold transition-all duration-200 shadow-[0_0_16px_var(--accent-glow)] touch-manipulation"
+            >
+              <Plus size={15} /> <span>Add Trade</span>
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-6 space-y-6">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         <JournalStats trades={trades} />
 
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
           <FilterBar filter={filter} onChange={setFilter} />
-          <button onClick={() => setShowCharts(!showCharts)}
-            className={`ml-3 flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs border hairline transition-all duration-200 flex-shrink-0 ${
+          <button
+            onClick={() => setShowCharts(!showCharts)}
+            className={`flex items-center justify-center gap-1.5 px-3.5 py-2 min-h-[38px] rounded-xl text-xs border hairline transition-all duration-200 flex-shrink-0 touch-manipulation ${
               showCharts ? 'text-[var(--accent)] bg-[var(--accent-subtle)] border-[var(--accent-dim)]' : 'text-[var(--text-secondary)] border-[var(--border)] hover:bg-white/5'
-            }`}>
+            }`}
+          >
             Charts {showCharts ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
           </button>
         </div>

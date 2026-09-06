@@ -185,9 +185,9 @@ export default function TVChart({ pair, intervals = [] }: TVChartProps) {
   return (
     <div className="my-3 chart-panel rounded-2xl border hairline border-[var(--border-bright)] overflow-hidden shadow-2xl animate-slideUp">
       {/* Header Bar */}
-      <div className="flex items-center justify-between px-4 py-2.5 border-b hairline border-[var(--border)] bg-[var(--bg-surface)]/80 backdrop-blur-md">
-        <div className="flex items-center gap-3">
-          <span className="font-mono text-xs font-semibold text-[var(--text-primary)]">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3 sm:px-4 py-2.5 border-b hairline border-[var(--border)] bg-[var(--bg-surface)]/80 backdrop-blur-md">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <span className="font-mono text-xs sm:text-sm font-semibold text-[var(--text-primary)]">
             {cleanPair}
           </span>
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--accent-subtle)] text-[var(--accent)] font-mono border hairline border-[var(--accent-dim)]">
@@ -195,17 +195,31 @@ export default function TVChart({ pair, intervals = [] }: TVChartProps) {
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Multi-timeframe Selector Tabs */}
-          <div className="flex items-center gap-1 bg-[var(--bg-elevated)] p-0.5 rounded-lg border hairline border-[var(--border)]">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Mobile Select dropdown */}
+          <select
+            value={activeInterval}
+            onChange={(e) => setActiveInterval(e.target.value)}
+            className="sm:hidden bg-[var(--bg-elevated)] border hairline border-[var(--border)] rounded-lg px-2 py-1 text-xs font-mono text-[var(--text-primary)] min-h-[34px] outline-none"
+            aria-label="Select timeframe"
+          >
+            {availableIntervals.map((tf) => (
+              <option key={tf} value={tf}>
+                {INTERVAL_LABELS[tf] || tf}
+              </option>
+            ))}
+          </select>
+
+          {/* Desktop/Tablet Pill Tabs */}
+          <div className="hidden sm:flex items-center gap-0.5 bg-[var(--bg-elevated)] p-0.5 rounded-lg border hairline border-[var(--border)]">
             {availableIntervals.map((tf) => (
               <button
                 key={tf}
                 type="button"
                 onClick={() => setActiveInterval(tf)}
-                className={`px-2 py-0.5 text-[10px] font-mono rounded transition-colors ${
+                className={`px-2.5 py-1 text-xs font-mono rounded-md transition-colors touch-manipulation ${
                   activeInterval === tf
-                    ? 'bg-[var(--accent)] text-white font-semibold'
+                    ? 'bg-[var(--accent)] text-white font-semibold shadow-sm'
                     : 'text-[var(--text-muted)] hover:text-white'
                 }`}
               >
@@ -219,18 +233,18 @@ export default function TVChart({ pair, intervals = [] }: TVChartProps) {
             target="_blank"
             rel="noopener noreferrer"
             title="Open on TradingView"
-            className="p-1 rounded text-[var(--text-muted)] hover:text-white transition-colors"
+            className="min-w-[34px] min-h-[34px] rounded-lg hover:bg-white/8 text-[var(--text-muted)] hover:text-white transition-colors flex items-center justify-center touch-manipulation"
           >
-            <ExternalLink size={12} />
+            <ExternalLink size={13} />
           </a>
 
           <button
             type="button"
             onClick={() => setCollapsed(!collapsed)}
             title={collapsed ? 'Expand Chart' : 'Collapse Chart'}
-            className="p-1 rounded text-[var(--text-muted)] hover:text-white transition-colors"
+            className="min-w-[34px] min-h-[34px] rounded-lg hover:bg-white/8 text-[var(--text-muted)] hover:text-white transition-colors flex items-center justify-center touch-manipulation"
           >
-            {collapsed ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
+            {collapsed ? <ChevronDown size={15} /> : <ChevronUp size={15} />}
           </button>
         </div>
       </div>

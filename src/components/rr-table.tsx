@@ -153,11 +153,11 @@ function CopyCell({ value }: { value: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="group/cell inline-flex items-center gap-1 hover:text-white transition-colors rounded-md px-1.5 -mx-1.5 hover:bg-white/8 font-mono"
+      className="group/cell inline-flex items-center justify-center gap-1 hover:text-white transition-colors rounded-md px-2 py-1 min-h-[30px] hover:bg-white/8 font-mono touch-manipulation"
       title={`Copy ${value}`}
     >
       <span>{value}</span>
-      <span className="opacity-0 group-hover/cell:opacity-100 transition-opacity">
+      <span className="opacity-70 sm:opacity-0 group-hover/cell:opacity-100 transition-opacity">
         {copied
           ? <Check size={11} className="text-[var(--bull)]" />
           : <Copy size={11} className="text-[var(--text-muted)]" />

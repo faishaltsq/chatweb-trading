@@ -114,7 +114,7 @@ export default function ChatArea({ conversationId, onTitleUpdate }: ChatAreaProp
     <div className="flex flex-col flex-1 min-h-0">
       <div className="flex-1 overflow-y-auto">
         {messages.length === 0 ? (
-          <div className="relative flex flex-col items-center justify-center h-full text-center px-4 py-16 tv-grid-bg overflow-hidden">
+          <div className="relative flex flex-col items-center justify-center h-full text-center px-4 py-8 sm:py-16 tv-grid-bg overflow-hidden">
             <div className="w-14 h-14 rounded-2xl bg-[var(--accent-subtle)] flex items-center justify-center mb-5 border hairline border-[var(--accent-dim)]">
               <Sparkles size={24} className="text-[var(--accent)]" />
             </div>
@@ -122,7 +122,7 @@ export default function ChatArea({ conversationId, onTitleUpdate }: ChatAreaProp
             <p className="text-[var(--text-secondary)] text-sm max-w-md leading-6 mb-6">
               Send a chart screenshot or describe a trading scenario.
             </p>
-            <div className="grid grid-cols-2 gap-2.5 max-w-lg w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-lg w-full">
               {[
                 'Analyze this chart and identify key support/resistance levels',
                 'What is the best entry for a BUY position on XAUUSD?',
@@ -132,7 +132,7 @@ export default function ChatArea({ conversationId, onTitleUpdate }: ChatAreaProp
                 <button
                   key={prompt}
                   onClick={() => handleSend(prompt)}
-                  className="group text-left text-xs text-[var(--text-secondary)] hover:text-white p-3.5 rounded-xl border hairline border-[var(--border)] hover:border-[var(--accent-dim)] hover:bg-[var(--accent-subtle)] transition-all duration-200 hover:-translate-y-0.5"
+                  className="group text-left text-xs text-[var(--text-secondary)] hover:text-white p-3.5 rounded-xl border hairline border-[var(--border)] hover:border-[var(--accent-dim)] hover:bg-[var(--accent-subtle)] transition-all duration-200 hover:-translate-y-0.5 touch-manipulation"
                 >
                   {prompt}
                 </button>
@@ -140,7 +140,7 @@ export default function ChatArea({ conversationId, onTitleUpdate }: ChatAreaProp
             </div>
           </div>
         ) : (
-          <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+          <div className="max-w-3xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
             {messages.map((message) => (
               <MessageItem key={message.id} message={message} />
             ))}

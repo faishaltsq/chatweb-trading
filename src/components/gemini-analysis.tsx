@@ -14,7 +14,7 @@ export default function GeminiAnalysis({ content }: GeminiAnalysisProps) {
     <div className="mb-3 rounded-xl border hairline border-[var(--info)]/15 bg-[var(--info)]/[0.04] overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 w-full px-3 py-2.5 text-[var(--info)] text-xs font-medium hover:bg-[var(--info)]/8 transition-colors"
+        className="flex items-center gap-2 w-full px-3.5 py-2.5 min-h-[38px] text-[var(--info)] text-xs font-medium hover:bg-[var(--info)]/8 transition-colors touch-manipulation"
       >
         <Scan size={13} />
         <span>Chart Analysis (Gemini Vision)</span>

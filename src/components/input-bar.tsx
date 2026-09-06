@@ -103,9 +103,10 @@ export default function InputBar({ onSend, disabled }: InputBarProps) {
                 />
                 <button
                   onClick={() => removePreview(i)}
-                  className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[var(--bear)] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                  className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-[var(--bear)] flex items-center justify-center opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity shadow-lg touch-manipulation"
+                  title="Remove image"
                 >
-                  <X size={10} className="text-white" />
+                  <X size={12} className="text-white" />
                 </button>
               </div>
             ))}
@@ -118,13 +119,13 @@ export default function InputBar({ onSend, disabled }: InputBarProps) {
           </div>
         )}
 
-        <div className="flex items-end gap-2 bg-[var(--bg-elevated)] border hairline border-[var(--border-bright)] rounded-2xl px-3 py-2 focus-within:border-[var(--accent)] focus-within:shadow-[0_0_0_3px_var(--accent-glow)] transition-all duration-200">
+        <div className="flex items-end gap-2 bg-[var(--bg-elevated)] border hairline border-[var(--border-bright)] rounded-2xl px-2.5 sm:px-3 py-1.5 sm:py-2 focus-within:border-[var(--accent)] focus-within:shadow-[0_0_0_3px_var(--accent-glow)] transition-all duration-200">
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="p-2 rounded-xl hover:bg-white/8 text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors flex-shrink-0"
+            className="min-w-[38px] min-h-[38px] sm:min-w-[40px] sm:min-h-[40px] rounded-xl hover:bg-white/8 text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors flex items-center justify-center flex-shrink-0 touch-manipulation"
             title="Upload chart image"
           >
-            <ImagePlus size={18} />
+            <ImagePlus size={19} />
           </button>
           <input
             ref={fileInputRef}
@@ -142,7 +143,7 @@ export default function InputBar({ onSend, disabled }: InputBarProps) {
             onPaste={handlePaste}
             placeholder="Send a message or paste a chart..."
             rows={1}
-            className="flex-1 resize-none bg-transparent text-[var(--text-primary)] text-sm placeholder-[var(--text-muted)] outline-none py-2 max-h-32 scrollbar-thin"
+            className="flex-1 resize-none bg-transparent text-[var(--text-primary)] text-base sm:text-sm placeholder-[var(--text-muted)] outline-none py-2 max-h-32 scrollbar-thin"
             style={{ minHeight: '36px' }}
             onInput={(e) => {
               const t = e.target as HTMLTextAreaElement;
@@ -153,7 +154,7 @@ export default function InputBar({ onSend, disabled }: InputBarProps) {
           <button
             onClick={handleSubmit}
             disabled={disabled || (!input.trim() && previews.length === 0)}
-            className="p-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent)]/85 text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 flex-shrink-0"
+            className="min-w-[38px] min-h-[38px] sm:min-w-[40px] sm:min-h-[40px] rounded-xl bg-[var(--accent)] hover:bg-[var(--accent)]/85 text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center flex-shrink-0 touch-manipulation"
           >
             {disabled ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
           </button>

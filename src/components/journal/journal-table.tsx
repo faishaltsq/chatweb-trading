@@ -2,7 +2,7 @@
 
 import { type Trade, type CustomColumn } from '@/lib/journal/schema';
 import { statusColor, dirColor } from '@/lib/journal/constants';
-import { Star, GripVertical, Pencil, Trash2, Image } from 'lucide-react';
+import { Star, GripVertical, Pencil, Trash2, Image, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 
 interface JournalTableProps {
@@ -15,7 +15,15 @@ interface JournalTableProps {
   onCustomValueUpdate?: (tradeId: string, columnId: string, value: string) => void;
 }
 
-export default function JournalTable({ trades, customColumns = [], customValues = {}, onEdit, onDelete, onInlineUpdate, onCustomValueUpdate }: JournalTableProps) {
+export default function JournalTable({
+  trades,
+  customColumns = [],
+  customValues = {},
+  onEdit,
+  onDelete,
+  onInlineUpdate,
+  onCustomValueUpdate,
+}: JournalTableProps) {
   if (trades.length === 0) {
     return (
       <div className="text-center py-20 text-[var(--text-muted)] text-sm">
@@ -25,52 +33,209 @@ export default function JournalTable({ trades, customColumns = [], customValues 
   }
 
   return (
-    <div className="overflow-x-auto border hairline border-[var(--border)] rounded-2xl">
-      <table className="w-full text-xs border-collapse min-w-[1200px]">
-        <thead>
-          <tr className="bg-[var(--bg-surface)] text-[var(--text-muted)] text-left">
-            <th className="w-8 px-2 py-3" />
-            <th className="px-3 py-3 font-semibold text-[10px] uppercase tracking-wider">Date</th>
-            <th className="px-3 py-3 font-semibold text-[10px] uppercase tracking-wider">Pair</th>
-            <th className="px-3 py-3 font-semibold text-[10px] uppercase tracking-wider">Dir</th>
-            <th className="px-3 py-3 font-semibold text-[10px] uppercase tracking-wider">TF</th>
-            <th className="px-3 py-3 font-semibold text-right text-[10px] uppercase tracking-wider">Entry</th>
-            <th className="px-3 py-3 font-semibold text-right text-[10px] uppercase tracking-wider">Stop Loss</th>
-            <th className="px-3 py-3 font-semibold text-right text-[10px] uppercase tracking-wider">Take Profit</th>
-            <th className="px-3 py-3 font-semibold text-right text-[10px] uppercase tracking-wider">Lot</th>
-            <th className="px-3 py-3 font-semibold text-center text-[10px] uppercase tracking-wider">Status</th>
-            <th className="px-3 py-3 font-semibold text-right text-[10px] uppercase tracking-wider">PnL ($)</th>
-            <th className="px-3 py-3 font-semibold text-right text-[10px] uppercase tracking-wider">PnL (pts)</th>
-            <th className="px-3 py-3 font-semibold text-center text-[10px] uppercase tracking-wider">Rating</th>
-            <th className="px-3 py-3 font-semibold text-[10px] uppercase tracking-wider">Emotion</th>
-            <th className="px-3 py-3 font-semibold text-[10px] uppercase tracking-wider">Tags</th>
-            <th className="px-3 py-3 font-semibold w-8 text-[10px] uppercase tracking-wider">Img</th>
-            {customColumns.map((col) => (
-              <th key={col.id} className="px-3 py-3 font-semibold text-[var(--info)] text-[10px] uppercase tracking-wider">{col.name}</th>
+    <>
+      {/* ============================================================ */}
+      {/* MOBILE CARD VIEW (< md screens)                             */}
+      {/* ============================================================ */}
+      <div className="md:hidden space-y-2.5">
+        {trades.map((trade) => (
+          <TradeCard
+            key={trade.id}
+            trade={trade}
+            customColumns={customColumns}
+            customValues={customValues[trade.id] || {}}
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
+        ))}
+      </div>
+
+      {/* ============================================================ */}
+      {/* DESKTOP TABLE VIEW (>= md screens)                          */}
+      {/* ============================================================ */}
+      <div className="hidden md:block overflow-x-auto border hairline border-[var(--border)] rounded-2xl">
+        <table className="w-full text-xs border-collapse min-w-[950px] lg:min-w-[1200px]">
+          <thead>
+            <tr className="bg-[var(--bg-surface)] text-[var(--text-muted)] text-left">
+              <th className="w-8 px-2 py-3" />
+              <th className="px-3 py-3 font-semibold text-[10px] uppercase tracking-wider">Date</th>
+              <th className="px-3 py-3 font-semibold text-[10px] uppercase tracking-wider">Pair</th>
+              <th className="px-3 py-3 font-semibold text-[10px] uppercase tracking-wider">Dir</th>
+              <th className="px-3 py-3 font-semibold text-[10px] uppercase tracking-wider">TF</th>
+              <th className="px-3 py-3 font-semibold text-right text-[10px] uppercase tracking-wider">Entry</th>
+              <th className="px-3 py-3 font-semibold text-right text-[10px] uppercase tracking-wider">Stop Loss</th>
+              <th className="px-3 py-3 font-semibold text-right text-[10px] uppercase tracking-wider">Take Profit</th>
+              <th className="px-3 py-3 font-semibold text-right text-[10px] uppercase tracking-wider">Lot</th>
+              <th className="px-3 py-3 font-semibold text-center text-[10px] uppercase tracking-wider">Status</th>
+              <th className="px-3 py-3 font-semibold text-right text-[10px] uppercase tracking-wider">PnL ($)</th>
+              <th className="px-3 py-3 font-semibold text-right text-[10px] uppercase tracking-wider">PnL (pts)</th>
+              <th className="px-3 py-3 font-semibold text-center text-[10px] uppercase tracking-wider">Rating</th>
+              <th className="px-3 py-3 font-semibold text-[10px] uppercase tracking-wider">Emotion</th>
+              <th className="px-3 py-3 font-semibold text-[10px] uppercase tracking-wider">Tags</th>
+              <th className="px-3 py-3 font-semibold w-8 text-[10px] uppercase tracking-wider">Img</th>
+              {customColumns.map((col) => (
+                <th key={col.id} className="px-3 py-3 font-semibold text-[var(--info)] text-[10px] uppercase tracking-wider">{col.name}</th>
+              ))}
+              <th className="px-3 py-3 font-semibold w-20 text-[10px] uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {trades.map((trade) => (
+              <TradeRow
+                key={trade.id}
+                trade={trade}
+                customColumns={customColumns}
+                customValues={customValues[trade.id] || {}}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onInlineUpdate={onInlineUpdate}
+                onCustomValueUpdate={onCustomValueUpdate}
+              />
             ))}
-            <th className="px-3 py-3 font-semibold w-20 text-[10px] uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {trades.map((trade) => (
-            <TradeRow
-              key={trade.id}
-              trade={trade}
-              customColumns={customColumns}
-              customValues={customValues[trade.id] || {}}
-              onEdit={onEdit}
-              onDelete={onDelete}
-              onInlineUpdate={onInlineUpdate}
-              onCustomValueUpdate={onCustomValueUpdate}
-            />
+          </tbody>
+        </table>
+      </div>
+    </>
+  );
+}
+
+// ============================================================
+// Mobile Trade Card
+// ============================================================
+function TradeCard({
+  trade,
+  customColumns,
+  customValues,
+  onEdit,
+  onDelete,
+}: {
+  trade: Trade;
+  customColumns: CustomColumn[];
+  customValues: Record<string, string>;
+  onEdit: (t: Trade) => void;
+  onDelete: (id: string) => void;
+}) {
+  const tps = (() => {
+    try { return JSON.parse(trade.takeProfit || '[]'); } catch { return []; }
+  })();
+  const tags = (() => {
+    try { return JSON.parse(trade.tags || '[]'); } catch { return []; }
+  })();
+
+  const pnlVal = trade.pnlDollar ?? 0;
+  const pnlColor = pnlVal > 0 ? 'text-[var(--bull)]' : pnlVal < 0 ? 'text-[var(--bear)]' : 'text-[var(--text-muted)]';
+  const pnlPrefix = pnlVal > 0 ? '+' : '';
+
+  return (
+    <div
+      onClick={() => onEdit(trade)}
+      className="bg-[var(--bg-surface)] border hairline border-[var(--border)] rounded-2xl p-3.5 space-y-2.5 active:bg-white/[0.04] transition-colors cursor-pointer"
+    >
+      {/* Row 1: Pair + Direction + Status + Date */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-sm font-bold text-[var(--text-primary)]">{trade.pair}</span>
+          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${dirColor(trade.direction)} bg-white/5`}>
+            {trade.direction}
+          </span>
+          {trade.timeframe && (
+            <span className="text-[10px] font-mono text-[var(--text-muted)] px-1.5 py-0.5 rounded bg-white/5">
+              {trade.timeframe}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md ${statusColor(trade.status || 'OPEN')}`}>
+            {trade.status || 'OPEN'}
+          </span>
+          <span className="text-[10px] font-mono text-[var(--text-muted)]">{trade.date}</span>
+        </div>
+      </div>
+
+      {/* Row 2: PnL + Lots + Key Levels */}
+      <div className="flex items-center justify-between bg-[var(--bg-elevated)]/60 rounded-xl px-3 py-2 border hairline border-[var(--border)]">
+        <div>
+          <span className="text-[10px] text-[var(--text-muted)] block uppercase tracking-wider">PnL</span>
+          <span className={`font-mono text-sm font-bold ${pnlColor}`}>
+            {trade.pnlDollar != null ? `${pnlPrefix}$${trade.pnlDollar.toFixed(2)}` : '—'}
+          </span>
+          {trade.pnlPips != null && (
+            <span className={`text-[10px] font-mono ml-1.5 ${pnlColor}`}>
+              ({pnlPrefix}{trade.pnlPips} pts)
+            </span>
+          )}
+        </div>
+
+        <div className="text-right">
+          <span className="text-[10px] text-[var(--text-muted)] block uppercase tracking-wider">Entry / SL</span>
+          <span className="font-mono text-xs text-[var(--text-primary)]">
+            {trade.entryPrice ?? '—'} <span className="text-[var(--text-muted)]">/</span>{' '}
+            <span className="text-[var(--bear)]">{trade.stopLoss ?? '—'}</span>
+          </span>
+        </div>
+
+        {trade.lotSize != null && (
+          <div className="text-right">
+            <span className="text-[10px] text-[var(--text-muted)] block uppercase tracking-wider">Lot</span>
+            <span className="font-mono text-xs text-[var(--text-secondary)]">{trade.lotSize}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Row 3: TP Preview + Tags + Actions */}
+      <div className="flex items-center justify-between pt-0.5">
+        <div className="flex items-center gap-1.5 flex-wrap flex-1 min-w-0 mr-2">
+          {tps.length > 0 && (
+            <span className="text-[10px] font-mono text-[var(--bull)]">
+              TP: {tps.join(' / ')}
+            </span>
+          )}
+          {tags.map((t: string) => (
+            <span key={t} className="px-1.5 py-0.5 rounded bg-white/5 text-[var(--text-muted)] text-[9px] font-mono">
+              #{t}
+            </span>
           ))}
-        </tbody>
-      </table>
+          {trade.emotion && (
+            <span className="text-[10px] text-[var(--text-secondary)] italic">
+              · {trade.emotion}
+            </span>
+          )}
+        </div>
+
+        {/* Action buttons with touch targets */}
+        <div className="flex items-center gap-1 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={() => onEdit(trade)}
+            className="min-w-[34px] min-h-[34px] rounded-lg bg-white/5 hover:bg-white/10 text-[var(--text-secondary)] hover:text-white transition-colors flex items-center justify-center touch-manipulation"
+            title="Edit trade"
+          >
+            <Pencil size={13} />
+          </button>
+          <button
+            onClick={() => onDelete(trade.id)}
+            className="min-w-[34px] min-h-[34px] rounded-lg bg-[var(--bear)]/10 hover:bg-[var(--bear)]/20 text-[var(--bear)] transition-colors flex items-center justify-center touch-manipulation"
+            title="Delete trade"
+          >
+            <Trash2 size={13} />
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
 
-function TradeRow({ trade, customColumns, customValues, onEdit, onDelete, onInlineUpdate, onCustomValueUpdate }: {
+// ============================================================
+// Desktop Trade Row
+// ============================================================
+function TradeRow({
+  trade,
+  customColumns,
+  customValues,
+  onEdit,
+  onDelete,
+  onInlineUpdate,
+  onCustomValueUpdate,
+}: {
   trade: Trade;
   customColumns: CustomColumn[];
   customValues: Record<string, string>;
@@ -132,9 +297,12 @@ function TradeRow({ trade, customColumns, customValues, onEdit, onDelete, onInli
       <td className="px-3 py-2.5 text-center">
         <div className="flex gap-0.5 justify-center">
           {[1, 2, 3, 4, 5].map((n) => (
-            <button key={n} onClick={() => onInlineUpdate(trade.id, 'setupRating', n)}
-              className={`transition-colors ${(trade.setupRating ?? 0) >= n * 2 ? 'text-[var(--warning)]' : 'text-[var(--text-muted)]/30'}`}>
-              <Star size={10} fill={(trade.setupRating ?? 0) >= n * 2 ? 'currentColor' : 'none'} />
+            <button
+              key={n}
+              onClick={() => onInlineUpdate(trade.id, 'setupRating', n)}
+              className={`p-1 min-w-[20px] min-h-[20px] flex items-center justify-center transition-colors ${(trade.setupRating ?? 0) >= n * 2 ? 'text-[var(--warning)]' : 'text-[var(--text-muted)]/30'}`}
+            >
+              <Star size={11} fill={(trade.setupRating ?? 0) >= n * 2 ? 'currentColor' : 'none'} />
             </button>
           ))}
         </div>
@@ -160,12 +328,12 @@ function TradeRow({ trade, customColumns, customValues, onEdit, onDelete, onInli
         </td>
       ))}
       <td className="px-3 py-2.5">
-        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button onClick={() => onEdit(trade)} className="p-1 rounded-lg hover:bg-white/8 text-[var(--text-muted)] hover:text-white transition-colors">
-            <Pencil size={12} />
+        <div className="flex gap-1 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+          <button onClick={() => onEdit(trade)} className="p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-lg hover:bg-white/8 text-[var(--text-muted)] hover:text-white transition-colors touch-manipulation">
+            <Pencil size={13} />
           </button>
-          <button onClick={() => onDelete(trade.id)} className="p-1 rounded-lg hover:bg-[var(--bear)]/15 text-[var(--text-muted)] hover:text-[var(--bear)] transition-colors">
-            <Trash2 size={12} />
+          <button onClick={() => onDelete(trade.id)} className="p-1.5 min-w-[28px] min-h-[28px] flex items-center justify-center rounded-lg hover:bg-[var(--bear)]/15 text-[var(--text-muted)] hover:text-[var(--bear)] transition-colors touch-manipulation">
+            <Trash2 size={13} />
           </button>
         </div>
       </td>

@@ -14,7 +14,7 @@ export default function ThinkingBlock({ content }: ThinkingBlockProps) {
     <div className="my-2 rounded-xl border hairline border-[var(--warning)]/15 bg-[var(--warning)]/[0.04] overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 w-full px-3 py-2.5 text-[var(--warning)] text-xs font-medium hover:bg-[var(--warning)]/8 transition-colors"
+        className="flex items-center gap-2 w-full px-3.5 py-2.5 min-h-[38px] text-[var(--warning)] text-xs font-medium hover:bg-[var(--warning)]/8 transition-colors touch-manipulation"
       >
         <Brain size={13} />
         <span>Thinking</span>

@@ -138,6 +138,18 @@ pre code.hljs { background: transparent !important; padding: 0 !important; }
   color: var(--text-muted);
 }
 
+/* Prevent iOS auto-zoom on input focus */
+@media (max-width: 768px) {
+  .input-field,
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
 /* ====== Scroll fade mask ====== */
 .scroll-fade-top {
   mask-image: linear-gradient(to bottom, transparent 0%, black 24px);

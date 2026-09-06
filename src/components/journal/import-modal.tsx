@@ -78,21 +78,25 @@ export default function ImportModal({ open, onClose, onImport }: ImportModalProp
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-xl animate-fadeIn" onClick={onClose} />
-      <div className="relative z-10 bg-[var(--bg-surface)] border hairline border-[var(--border-bright)] rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-y-auto scrollbar-thin animate-slideUp shadow-2xl">
-        <div className="flex items-center justify-between px-6 py-4 border-b hairline border-[var(--border)]">
-          <h2 className="text-lg font-semibold text-[var(--text-primary)] tracking-tight">Import CSV</h2>
-          <button onClick={onClose} className="p-1.5 rounded-xl hover:bg-white/8 text-[var(--text-secondary)] transition-colors">
+      <div className="relative z-10 bg-[var(--bg-surface)] border hairline border-[var(--border-bright)] rounded-2xl w-full max-w-2xl max-h-[85vh] sm:max-h-[80vh] overflow-y-auto scrollbar-thin animate-slideUp shadow-2xl">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b hairline border-[var(--border)]">
+          <h2 className="text-base sm:text-lg font-semibold text-[var(--text-primary)] tracking-tight">Import CSV</h2>
+          <button
+            onClick={onClose}
+            className="min-w-[36px] min-h-[36px] rounded-xl hover:bg-white/8 text-[var(--text-secondary)] transition-colors flex items-center justify-center touch-manipulation"
+            title="Close"
+          >
             <X size={18} />
           </button>
         </div>
 
-        <div className="px-6 py-4 space-y-4">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 space-y-4">
           {rows.length === 0 ? (
             <div>
               <button onClick={() => fileRef.current?.click()}
-                className="flex flex-col items-center gap-3 w-full py-10 rounded-2xl border-2 border-dashed border-[var(--border)] hover:border-[var(--accent-dim)] text-[var(--text-muted)] hover:text-[var(--accent)] transition-all duration-200">
+                className="flex flex-col items-center gap-3 w-full py-10 rounded-2xl border-2 border-dashed border-[var(--border)] hover:border-[var(--accent-dim)] text-[var(--text-muted)] hover:text-[var(--accent)] transition-all duration-200 touch-manipulation">
                 <Upload size={28} />
                 <span className="text-sm">Click to upload CSV file</span>
                 <span className="text-[11px] text-[var(--text-muted)]">Supports: date, pair, direction, entry, SL, TP, lot, status, PnL, notes</span>
@@ -113,7 +117,7 @@ export default function ImportModal({ open, onClose, onImport }: ImportModalProp
               </div>
 
               <div className="overflow-x-auto max-h-64 border hairline border-[var(--border)] rounded-xl">
-                <table className="w-full text-[11px]">
+                <table className="w-full min-w-[500px] text-[11px]">
                   <thead>
                     <tr className="bg-white/[0.03]">
                       {headers.slice(0, 8).map((h) => (
@@ -136,11 +140,17 @@ export default function ImportModal({ open, onClose, onImport }: ImportModalProp
                 )}
               </div>
 
-              <div className="flex justify-end gap-3 mt-4">
-                <button onClick={() => { setRows([]); setHeaders([]); }}
-                  className="px-4 py-2 rounded-xl text-sm text-[var(--text-secondary)] hover:bg-white/5 transition-colors">Cancel</button>
-                <button onClick={handleImport}
-                  className="px-5 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent)]/85 text-white text-sm font-semibold transition-all duration-200 shadow-[0_0_16px_var(--accent-glow)]">
+              <div className="flex justify-end gap-2.5 mt-4">
+                <button
+                  onClick={() => { setRows([]); setHeaders([]); }}
+                  className="min-h-[40px] px-4 py-2 rounded-xl text-sm text-[var(--text-secondary)] hover:bg-white/5 transition-colors touch-manipulation"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleImport}
+                  className="min-h-[40px] px-5 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent)]/85 text-white text-sm font-semibold transition-all duration-200 shadow-[0_0_16px_var(--accent-glow)] touch-manipulation"
+                >
                   Import {rows.length} trades
                 </button>
               </div>

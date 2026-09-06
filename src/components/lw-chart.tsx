@@ -221,10 +221,10 @@ export default function LWChart({ pair, intervals = [] }: LWChartProps) {
   return (
     <div className="my-3 chart-panel rounded-2xl border hairline border-[var(--border-bright)] overflow-hidden shadow-2xl animate-slideUp">
       {/* Top Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 border-b hairline border-[var(--border)] bg-[var(--bg-surface)]/90 backdrop-blur-md">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3 sm:px-4 py-2.5 border-b hairline border-[var(--border)] bg-[var(--bg-surface)]/90 backdrop-blur-md">
         {/* Left: Asset info + Price */}
-        <div className="flex items-center gap-2.5">
-          <span className="font-mono text-xs font-bold text-[var(--text-primary)]">
+        <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+          <span className="font-mono text-xs sm:text-sm font-bold text-[var(--text-primary)]">
             {meta?.displayName || pair.toUpperCase()}
           </span>
           {meta?.currency && (
@@ -233,14 +233,14 @@ export default function LWChart({ pair, intervals = [] }: LWChartProps) {
             </span>
           )}
           {currentPrice != null && (
-            <span className="font-mono text-xs font-bold text-[var(--text-primary)]">
+            <span className="font-mono text-xs sm:text-sm font-bold text-[var(--text-primary)]">
               {meta?.currency === 'IDR'
                 ? currentPrice.toLocaleString('id-ID')
                 : currentPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
             </span>
           )}
           {changePercent != null && (
-            <span className={`text-[10px] font-mono font-semibold ${isUp ? 'text-[var(--bull)]' : 'text-[var(--bear)]'}`}>
+            <span className={`text-[10px] sm:text-xs font-mono font-semibold ${isUp ? 'text-[var(--bull)]' : 'text-[var(--bear)]'}`}>
               {isUp ? '+' : ''}{changePercent}%
             </span>
           )}
@@ -250,9 +250,9 @@ export default function LWChart({ pair, intervals = [] }: LWChartProps) {
           </span>
         </div>
 
-        {/* Center: Live Hover OHLC */}
+        {/* Center: Live Hover OHLC (visible on tablet & desktop) */}
         {displayOHLC && !collapsed && (
-          <div className="hidden lg:flex items-center gap-3 text-[10px] font-mono text-[var(--text-muted)]">
+          <div className="hidden md:flex items-center gap-3 text-[10px] font-mono text-[var(--text-muted)]">
             <span>O <span className="text-[var(--text-secondary)]">{displayOHLC.open}</span></span>
             <span>H <span className="text-[var(--text-secondary)]">{displayOHLC.high}</span></span>
             <span>L <span className="text-[var(--text-secondary)]">{displayOHLC.low}</span></span>
@@ -261,15 +261,29 @@ export default function LWChart({ pair, intervals = [] }: LWChartProps) {
         )}
 
         {/* Right: Timeframe Switcher + Controls */}
-        <div className="flex items-center gap-2">
-          {/* Multi-TF Selector */}
-          <div className="flex items-center gap-0.5 bg-[var(--bg-elevated)] p-0.5 rounded-lg border hairline border-[var(--border)]">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Mobile Select dropdown for timeframe */}
+          <select
+            value={activeInterval}
+            onChange={(e) => setActiveInterval(e.target.value)}
+            className="sm:hidden bg-[var(--bg-elevated)] border hairline border-[var(--border)] rounded-lg px-2 py-1 text-xs font-mono text-[var(--text-primary)] min-h-[34px] outline-none"
+            aria-label="Select timeframe"
+          >
+            {availableIntervals.map((tf) => (
+              <option key={tf} value={tf}>
+                {INTERVAL_LABELS[tf] || tf}
+              </option>
+            ))}
+          </select>
+
+          {/* Desktop/Tablet Pill tabs */}
+          <div className="hidden sm:flex items-center gap-0.5 bg-[var(--bg-elevated)] p-0.5 rounded-lg border hairline border-[var(--border)]">
             {availableIntervals.map((tf) => (
               <button
                 key={tf}
                 type="button"
                 onClick={() => setActiveInterval(tf)}
-                className={`px-2 py-0.5 text-[10px] font-mono rounded transition-colors ${
+                className={`px-2.5 py-1 text-xs font-mono rounded-md transition-colors touch-manipulation ${
                   activeInterval === tf
                     ? 'bg-[var(--accent)] text-white font-semibold shadow-sm'
                     : 'text-[var(--text-muted)] hover:text-white'
@@ -284,9 +298,9 @@ export default function LWChart({ pair, intervals = [] }: LWChartProps) {
             type="button"
             onClick={loadCandles}
             title="Refresh candle data"
-            className="p-1 rounded text-[var(--text-muted)] hover:text-white transition-colors"
+            className="min-w-[34px] min-h-[34px] rounded-lg hover:bg-white/8 text-[var(--text-muted)] hover:text-white transition-colors flex items-center justify-center touch-manipulation"
           >
-            <RefreshCw size={11} className={loading ? 'animate-spin text-[var(--accent)]' : ''} />
+            <RefreshCw size={13} className={loading ? 'animate-spin text-[var(--accent)]' : ''} />
           </button>
 
           <a
@@ -294,28 +308,28 @@ export default function LWChart({ pair, intervals = [] }: LWChartProps) {
             target="_blank"
             rel="noopener noreferrer"
             title="Open on TradingView"
-            className="p-1 rounded text-[var(--text-muted)] hover:text-white transition-colors"
+            className="min-w-[34px] min-h-[34px] rounded-lg hover:bg-white/8 text-[var(--text-muted)] hover:text-white transition-colors flex items-center justify-center touch-manipulation"
           >
-            <ExternalLink size={12} />
+            <ExternalLink size={13} />
           </a>
 
           <button
             type="button"
             onClick={() => setCollapsed(!collapsed)}
             title={collapsed ? 'Expand Chart' : 'Collapse Chart'}
-            className="p-1 rounded text-[var(--text-muted)] hover:text-white transition-colors"
+            className="min-w-[34px] min-h-[34px] rounded-lg hover:bg-white/8 text-[var(--text-muted)] hover:text-white transition-colors flex items-center justify-center touch-manipulation"
           >
-            {collapsed ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
+            {collapsed ? <ChevronDown size={15} /> : <ChevronUp size={15} />}
           </button>
         </div>
       </div>
 
       {/* Notice for Daily-Only assets */}
       {isIdx && !collapsed && (
-        <div className="px-4 py-1.5 bg-white/[0.02] border-b hairline border-[var(--border)] flex items-center justify-between text-[10px] text-[var(--text-muted)] font-mono">
+        <div className="px-3 sm:px-4 py-1.5 bg-white/[0.02] border-b hairline border-[var(--border)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 text-[10px] text-[var(--text-muted)] font-mono">
           <span className="flex items-center gap-1.5">
-            <AlertCircle size={10} className="text-[var(--warning)]" />
-            Saham IDX data resmi bersifat harian (EOD). Timeframe intraday (M15/H1) tidak tersedia gratis dari bursa.
+            <AlertCircle size={11} className="text-[var(--warning)] flex-shrink-0" />
+            Saham IDX data resmi bersifat harian (EOD).
           </span>
           <span className="text-[9px] opacity-60">TradingView Lightweight Charts™ v5</span>
         </div>

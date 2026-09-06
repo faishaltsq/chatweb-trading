@@ -71,26 +71,26 @@ export default function JournalCharts({ trades }: ChartsProps) {
 
   return (
     <div className="bg-[var(--bg-surface)] border hairline border-[var(--border)] rounded-2xl overflow-hidden mb-4">
-      <div className="flex border-b hairline border-[var(--border)]">
+      <div className="flex border-b hairline border-[var(--border)] overflow-x-auto scrollbar-thin">
         {tabs.map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`flex items-center gap-1.5 px-4 py-3 text-xs font-medium transition-all duration-200 ${
+            className={`flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs font-medium transition-all duration-200 flex-1 sm:flex-initial touch-manipulation ${
               tab === t.id
-                ? 'text-[var(--accent)] border-b-2 border-[var(--accent)] bg-[var(--accent-subtle)]'
+                ? 'text-[var(--accent)] border-b-2 border-[var(--accent)] bg-[var(--accent-subtle)] font-semibold'
                 : 'text-[var(--text-muted)] hover:text-white'
             }`}
           >
-            <t.icon size={13} /> {t.label}
+            <t.icon size={13} /> <span>{t.label}</span>
           </button>
         ))}
       </div>
 
-      <div className="p-5 h-72">
+      <div className="p-3 sm:p-5 h-60 sm:h-72">
         {tab === 'equity' && (
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={equityData}>
+            <LineChart data={equityData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" />
               <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} tickLine={false} axisLine={false} />
               <YAxis tick={{ fontSize: 10, fill: 'var(--text-muted)' }} tickLine={false} axisLine={false} />
@@ -102,7 +102,7 @@ export default function JournalCharts({ trades }: ChartsProps) {
 
         {tab === 'monthly' && (
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={monthlyData}>
+            <BarChart data={monthlyData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" />
               <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} tickLine={false} axisLine={false} />
               <YAxis tick={{ fontSize: 10, fill: 'var(--text-muted)' }} tickLine={false} axisLine={false} />
@@ -119,7 +119,16 @@ export default function JournalCharts({ trades }: ChartsProps) {
         {tab === 'distribution' && (
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
-              <Pie data={distData} cx="50%" cy="50%" outerRadius={90} innerRadius={40} dataKey="value" label={({ name, value }) => `${name}: ${value}`} paddingAngle={2}>
+              <Pie
+                data={distData}
+                cx="50%"
+                cy="50%"
+                outerRadius={75}
+                innerRadius={36}
+                dataKey="value"
+                label={({ name, value }) => `${name}: ${value}`}
+                paddingAngle={2}
+              >
                 {distData.map((entry, i) => (
                   <Cell key={i} fill={TV_COLORS[entry.name as keyof typeof TV_COLORS] || '#434651'} />
                 ))}
