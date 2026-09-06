@@ -24,17 +24,40 @@ interface ExtractedChart {
 function extractChartTag(content: string): { cleaned: string; chart: ExtractedChart | null } {
   let chart: ExtractedChart | null = null;
 
-  // Match [chart:PAIR:INTERVALS] e.g. [chart:XAUUSD:15,240] or [chart:XAUUSD:240]
   const cleaned = content.replace(
-    /\[chart:\s*([A-Za-z0-9_]+)\s*(?::\s*([0-9A-Za-z, ]+))?\s*\]/i,
+    /\[chart:\s*([A-Za-z0-9_]+)\s*(?::\s*([0-9A-Za-z, ]+))?\s*\]/gi,
     (_, pair, intervalsRaw) => {
-      const intervals = intervalsRaw
-        ? intervalsRaw.split(',').map((s: string) => s.trim().toUpperCase()).filter(Boolean)
-        : [];
-      chart = { pair: pair.toUpperCase(), intervals };
+      if (!chart) {
+        const intervals = intervalsRaw
+          ? intervalsRaw.split(',').map((s: string) => s.trim().toUpperCase()).filter(Boolean)
+          : [];
+        chart = { pair: pair.toUpperCase(), intervals };
+      }
       return '';
     }
   );
+
+  if (!chart) {
+    const KNOWN_PAIRS = [
+      'XAUUSD','GOLD','XAGUSD','SILVER','EURUSD','GBPUSD','USDJPY','AUDUSD',
+      'USDCAD','NZDUSD','USDCHF','GBPJPY','EURJPY','EURGBP','BTCUSD','BTCUSDT',
+      'ETHUSD','ETHUSDT','US30','NAS100','SPX500','USOIL',
+    ];
+    const TF_MAP: Record<string, string> = {
+      'M1':'1','M5':'5','M15':'15','M30':'30',
+      'H1':'60','1H':'60','H4':'240','4H':'240',
+      'D1':'1D','DAILY':'1D','W1':'1W','WEEKLY':'1W','MN':'1M',
+    };
+    const headingMatch = content.match(/^##\s+(\S+)\s+(\S+)/m);
+    if (headingMatch) {
+      const maybePair = headingMatch[1].toUpperCase();
+      const maybeTF = headingMatch[2].toUpperCase();
+      if (KNOWN_PAIRS.includes(maybePair)) {
+        const interval = TF_MAP[maybeTF] || '240';
+        chart = { pair: maybePair, intervals: [interval] };
+      }
+    }
+  }
 
   return { cleaned: cleaned.trimStart(), chart };
 }
