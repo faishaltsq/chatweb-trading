@@ -1,0 +1,145 @@
+@import "tailwindcss";
+
+:root {
+  --bg-root: #06080d;
+  --bg-surface: #0c1018;
+  --bg-elevated: #141922;
+  --bg-hover: #1c2333;
+  --accent: #00e5a0;
+  --accent-dim: #00e5a066;
+  --accent-glow: #00e5a033;
+  --accent-subtle: #00e5a015;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-bright: rgba(255, 255, 255, 0.12);
+  --text-primary: #f0f2f5;
+  --text-secondary: #8b95a5;
+  --text-muted: #4a5568;
+  --danger: #ef4444;
+  --warning: #f5a623;
+  --info: #3b82f6;
+}
+
+@theme inline {
+  --color-background: var(--bg-root);
+  --color-foreground: var(--text-primary);
+}
+
+body {
+  background: var(--bg-root);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Monospace for prices/numbers */
+.font-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* ====== Scrollbar ====== */
+.scrollbar-thin::-webkit-scrollbar { width: 4px; }
+.scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ====== Code highlight ====== */
+pre code.hljs { background: transparent !important; padding: 0 !important; }
+.hljs { background: transparent !important; }
+
+/* ====== Keyframe Animations ====== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes messageIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* ====== Animation Utility Classes ====== */
+.animate-fadeIn { animation: fadeIn 150ms ease-out forwards; }
+.animate-slideUp { animation: slideUp 200ms ease-out forwards; }
+.animate-slideInLeft { animation: slideInLeft 250ms ease-out forwards; }
+.animate-dropIn { animation: dropIn 150ms ease-out forwards; }
+.animate-messageIn { animation: messageIn 200ms ease-out forwards; }
+
+/* ====== Grid expand/collapse animation ====== */
+.grid-expand {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 200ms ease-out;
+}
+.grid-expand.open {
+  grid-template-rows: 1fr;
+}
+.grid-expand > div {
+  overflow: hidden;
+}
+
+/* ====== Focus glow ====== */
+.focus-glow:focus, .focus-glow:focus-within {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 1px var(--accent-dim), 0 0 16px var(--accent-glow);
+}
+
+/* ====== Input field base ====== */
+.input-field {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input-field:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-dim), 0 0 12px var(--accent-glow);
+}
+.input-field::placeholder {
+  color: var(--text-muted);
+}
+
+/* ====== Scroll fade mask ====== */
+.scroll-fade-top {
+  mask-image: linear-gradient(to bottom, transparent 0%, black 24px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 24px);
+}
+
+/* ====== Select dark styling ====== */
+select option {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
