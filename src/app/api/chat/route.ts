@@ -83,7 +83,7 @@ Contoh:
 
 Setelah chart tag, ikuti struktur:
 
-## [Pair] [Timeframe] — [Bias: Bullish/Bearish/Neutral]
+## [Pair] [Timeframe] [Bias: Bullish/Bearish/Neutral]
 
 [1-3 kalimat market structure dan konteks. Langsung ke poin.]
 
