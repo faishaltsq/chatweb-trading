@@ -32,27 +32,36 @@ const SYMBOL_MAP: Record<string, string> = {
   GBPCHF: 'FX:GBPCHF',
   GBPAUD: 'FX:GBPAUD',
 
-  // Indices
-  US30: 'DJ:DJI',
-  DJI: 'DJ:DJI',
-  NAS100: 'NASDAQ:NDX',
-  NDX: 'NASDAQ:NDX',
-  SPX500: 'SP:SPX',
-  SPX: 'SP:SPX',
+  // Indices — use OANDA CFDs (guaranteed to work in free widget embeds,
+  // official exchange indices like NASDAQ:NDX, SP:SPX, DJ:DJI show "only available on TradingView" error)
+  US30: 'OANDA:US30USD',
+  DJI: 'OANDA:US30USD',
+  DOW: 'OANDA:US30USD',
+  NAS100: 'OANDA:NAS100USD',
+  NDX: 'OANDA:NAS100USD',
+  NASDAQ: 'OANDA:NAS100USD',
+  SPX500: 'OANDA:SPX500USD',
+  SPX: 'OANDA:SPX500USD',
+  SP500: 'OANDA:SPX500USD',
   DXY: 'TVC:DXY',
+  NIKKEI: 'TVC:NI225',
+  DAX: 'OANDA:DE30EUR',
 
   // Crypto
   BTCUSD: 'BINANCE:BTCUSDT',
   BTCUSDT: 'BINANCE:BTCUSDT',
+  BTC: 'BINANCE:BTCUSDT',
   ETHUSD: 'BINANCE:ETHUSDT',
   ETHUSDT: 'BINANCE:ETHUSDT',
+  ETH: 'BINANCE:ETHUSDT',
   SOLUSD: 'BINANCE:SOLUSDT',
   SOLUSDT: 'BINANCE:SOLUSDT',
+  SOL: 'BINANCE:SOLUSDT',
   BNBUSD: 'BINANCE:BNBUSDT',
   XRPUSD: 'BINANCE:XRPUSDT',
   DOGEUSD: 'BINANCE:DOGEUSDT',
 
-  // Popular US Stocks (direct mapping)
+  // Popular US Stocks (direct mapping — works in free widget embed)
   AAPL: 'NASDAQ:AAPL',
   TSLA: 'NASDAQ:TSLA',
   NVDA: 'NASDAQ:NVDA',
@@ -68,7 +77,7 @@ const SYMBOL_MAP: Record<string, string> = {
   COIN: 'NASDAQ:COIN',
   BABA: 'NYSE:BABA',
 
-  // Popular Indonesian Stocks (IDX)
+  // Popular Indonesian Stocks (IDX — EOD data only in widget, but still shows chart)
   BBCA: 'IDX:BBCA',
   BBRI: 'IDX:BBRI',
   BMRI: 'IDX:BMRI',
@@ -82,6 +91,11 @@ const SYMBOL_MAP: Record<string, string> = {
   INDF: 'IDX:INDF',
   ADRO: 'IDX:ADRO',
   PGAS: 'IDX:PGAS',
+  BREN: 'IDX:BREN',
+  MDKA: 'IDX:MDKA',
+  EMTK: 'IDX:EMTK',
+  SIDO: 'IDX:SIDO',
+  KLBF: 'IDX:KLBF',
 };
 
 // Known forex currencies (3 chars)
