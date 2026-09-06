@@ -177,35 +177,34 @@ export default function JournalPage() {
 
   return (
     <div className="min-h-dvh bg-[var(--bg-root)] text-[var(--text-primary)]">
-      <header className="border-b border-[var(--border)] bg-[var(--bg-surface)] px-6 py-4">
+      <header className="border-b hairline border-[var(--border)] glass sticky top-0 z-40 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/" className="p-1.5 rounded-lg hover:bg-white/10 text-[var(--text-secondary)] hover:text-white transition-colors">
+            <Link href="/" className="p-1.5 rounded-xl hover:bg-white/8 text-[var(--text-secondary)] hover:text-white transition-colors">
               <ArrowLeft size={18} />
             </Link>
             <div>
-              <h1 className="text-lg font-bold text-[var(--text-primary)]">Trading Journal</h1>
+              <h1 className="text-lg font-bold text-[var(--text-primary)] tracking-tight">Trading Journal</h1>
               <p className="text-[11px] text-[var(--text-muted)]">{trades.length} trades recorded</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <ColumnManager columns={columns} onAdd={handleAddColumn} onDelete={handleDeleteColumn} />
             <button onClick={handleTemplate}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs text-[var(--text-secondary)] hover:text-white hover:bg-white/5 border border-[var(--border)] transition-colors">
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs text-[var(--text-secondary)] hover:text-white hover:bg-white/5 border hairline border-[var(--border)] transition-colors">
               <FileSpreadsheet size={14} /> Template
             </button>
             <button onClick={() => setImportOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs text-[var(--text-secondary)] hover:text-white hover:bg-white/5 border border-[var(--border)] transition-colors">
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs text-[var(--text-secondary)] hover:text-white hover:bg-white/5 border hairline border-[var(--border)] transition-colors">
               <Upload size={14} /> Import
             </button>
             <button onClick={handleExport}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs text-[var(--text-secondary)] hover:text-white hover:bg-white/5 border border-[var(--border)] transition-colors">
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs text-[var(--text-secondary)] hover:text-white hover:bg-white/5 border hairline border-[var(--border)] transition-colors">
               <Download size={14} /> Export
             </button>
             <button onClick={() => { setEditTrade(null); setModalOpen(true); }}
-              className="group relative flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--accent)] hover:brightness-110 text-[var(--bg-root)] text-xs font-semibold transition-all duration-200">
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent)]/85 text-white text-xs font-semibold transition-all duration-200 shadow-[0_0_16px_var(--accent-glow)]">
               <Plus size={14} /> Add Trade
-              <div className="absolute inset-0 rounded-lg bg-[var(--accent-glow)] blur-md opacity-0 group-hover:opacity-100 transition-opacity -z-10" />
             </button>
           </div>
         </div>
@@ -217,8 +216,8 @@ export default function JournalPage() {
         <div className="flex items-center justify-between">
           <FilterBar filter={filter} onChange={setFilter} />
           <button onClick={() => setShowCharts(!showCharts)}
-            className={`ml-3 flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs border border-[var(--border)] transition-all duration-200 flex-shrink-0 ${
-              showCharts ? 'text-[var(--accent)] bg-[var(--accent-subtle)] border-[var(--accent-dim)]' : 'text-[var(--text-secondary)] hover:bg-white/5'
+            className={`ml-3 flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs border hairline transition-all duration-200 flex-shrink-0 ${
+              showCharts ? 'text-[var(--accent)] bg-[var(--accent-subtle)] border-[var(--accent-dim)]' : 'text-[var(--text-secondary)] border-[var(--border)] hover:bg-white/5'
             }`}>
             Charts {showCharts ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
           </button>

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, type UIMessage } from 'ai';
-import { TrendingUp, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import MessageItem from './message-item';
 import InputBar from './input-bar';
 import {
@@ -114,11 +114,11 @@ export default function ChatArea({ conversationId, onTitleUpdate }: ChatAreaProp
     <div className="flex flex-col flex-1 min-h-0">
       <div className="flex-1 overflow-y-auto">
         {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center px-4 py-16">
-            <div className="w-14 h-14 rounded-2xl bg-[var(--accent-subtle)] flex items-center justify-center mb-5 border border-[var(--accent-dim)]">
+          <div className="flex flex-col items-center justify-center h-full text-center px-4 py-16 tv-grid-bg">
+            <div className="w-14 h-14 rounded-2xl bg-[var(--accent-subtle)] flex items-center justify-center mb-5 border hairline border-[var(--accent-dim)]">
               <Sparkles size={24} className="text-[var(--accent)]" />
             </div>
-            <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-2">Trading Analysis AI</h2>
+            <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-2 tracking-tight">Trading Analysis AI</h2>
             <p className="text-[var(--text-secondary)] text-sm max-w-md leading-6 mb-6">
               Send a chart screenshot or describe a trading scenario.
             </p>
@@ -132,7 +132,7 @@ export default function ChatArea({ conversationId, onTitleUpdate }: ChatAreaProp
                 <button
                   key={prompt}
                   onClick={() => handleSend(prompt)}
-                  className="group text-left text-xs text-[var(--text-secondary)] hover:text-white p-3.5 rounded-xl border border-[var(--border)] hover:border-[var(--accent-dim)] hover:bg-[var(--accent-subtle)] transition-all duration-200 hover:-translate-y-0.5"
+                  className="group text-left text-xs text-[var(--text-secondary)] hover:text-white p-3.5 rounded-xl border hairline border-[var(--border)] hover:border-[var(--accent-dim)] hover:bg-[var(--accent-subtle)] transition-all duration-200 hover:-translate-y-0.5"
                 >
                   {prompt}
                 </button>
@@ -146,12 +146,12 @@ export default function ChatArea({ conversationId, onTitleUpdate }: ChatAreaProp
             ))}
             {showDots && (
               <div className="flex gap-3 items-center animate-messageIn">
-                <div className="w-7 h-7 rounded-full bg-[var(--accent-subtle)] flex items-center justify-center flex-shrink-0 border border-[var(--accent-dim)]">
+                <div className="w-7 h-7 rounded-full bg-[var(--accent-subtle)] flex items-center justify-center flex-shrink-0 border hairline border-[var(--accent-dim)]">
                   <div className="flex gap-1">
                     {[0, 150, 300].map((delay) => (
                       <span
                         key={delay}
-                        className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"
+                        className="w-1 h-1 rounded-full bg-[var(--accent)]"
                         style={{ animation: 'pulseGlow 1.2s ease-in-out infinite', animationDelay: `${delay}ms` }}
                       />
                     ))}

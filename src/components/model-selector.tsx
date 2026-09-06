@@ -85,7 +85,7 @@ export default function ModelSelector({ value, onChange }: ModelSelectorProps) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-[var(--border)] text-[var(--text-secondary)] hover:text-white transition-colors text-xs"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/8 border hairline border-[var(--border-bright)] text-[var(--text-secondary)] hover:text-white transition-all duration-200 text-xs"
       >
         <ModelIcon icon={selected.icon} size={13} />
         <span className="max-w-[120px] truncate hidden sm:block">{selected.label}</span>
@@ -93,12 +93,12 @@ export default function ModelSelector({ value, onChange }: ModelSelectorProps) {
       </button>
 
       {open && (
-        <div className="absolute top-full mt-1 right-0 w-72 bg-[var(--bg-elevated)] border border-[var(--border-bright)] rounded-xl shadow-2xl z-50 overflow-hidden animate-dropIn">
+        <div className="absolute top-full mt-2 right-0 w-72 bg-[var(--bg-elevated)] border hairline border-[var(--border-bright)] rounded-2xl shadow-2xl z-50 overflow-hidden animate-dropIn">
           {MODELS.map((model) => (
             <button
               key={model.id}
               onClick={() => { onChange(model.id); setOpen(false); }}
-              className={`flex items-start gap-3 w-full px-4 py-3 text-left hover:bg-white/5 transition-colors border-b border-[var(--border)] last:border-0 ${
+              className={`flex items-start gap-3 w-full px-4 py-3 text-left hover:bg-white/[0.04] transition-colors border-b hairline border-[var(--border)] last:border-0 ${
                 value === model.id ? 'bg-[var(--accent-subtle)]' : ''
               }`}
             >
@@ -112,13 +112,13 @@ export default function ModelSelector({ value, onChange }: ModelSelectorProps) {
                 <div className="text-[11px] text-[var(--text-muted)] mt-0.5">{model.description}</div>
                 <div className="flex gap-1.5 mt-1.5">
                   {model.vision && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--info)]/15 text-[var(--info)]">vision</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--info)]/12 text-[var(--info)]">vision</span>
                   )}
                   {model.reasoning && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--warning)]/15 text-[var(--warning)]">thinking</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--warning)]/12 text-[var(--warning)]">thinking</span>
                   )}
                   {!model.vision && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-[var(--text-muted)]">text only</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-white/5 text-[var(--text-muted)]">text only</span>
                   )}
                 </div>
               </div>

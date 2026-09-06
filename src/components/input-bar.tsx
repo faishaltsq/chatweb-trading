@@ -84,7 +84,7 @@ export default function InputBar({ onSend, disabled }: InputBarProps) {
 
   return (
     <div
-      className={`border-t bg-[var(--bg-surface)] p-4 transition-colors duration-200 ${
+      className={`border-t hairline glass p-4 transition-colors duration-200 ${
         dragging ? 'border-[var(--accent)] bg-[var(--accent-subtle)]' : 'border-[var(--border)]'
       }`}
       onDrop={handleDrop}
@@ -99,11 +99,11 @@ export default function InputBar({ onSend, disabled }: InputBarProps) {
                 <img
                   src={p.url}
                   alt="preview"
-                  className="w-16 h-16 object-cover rounded-lg border border-[var(--border-bright)]"
+                  className="w-16 h-16 object-cover rounded-xl border hairline border-[var(--border-bright)]"
                 />
                 <button
                   onClick={() => removePreview(i)}
-                  className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                  className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[var(--bear)] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
                 >
                   <X size={10} className="text-white" />
                 </button>
@@ -118,10 +118,10 @@ export default function InputBar({ onSend, disabled }: InputBarProps) {
           </div>
         )}
 
-        <div className="flex items-end gap-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl px-3 py-2 focus-within:border-[var(--accent)] focus-within:shadow-[0_0_0_1px_var(--accent-dim),0_0_16px_var(--accent-glow)] transition-all duration-200">
+        <div className="flex items-end gap-2 bg-[var(--bg-elevated)] border hairline border-[var(--border-bright)] rounded-2xl px-3 py-2 focus-within:border-[var(--accent)] focus-within:shadow-[0_0_0_3px_var(--accent-glow)] transition-all duration-200">
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="p-2 rounded-lg hover:bg-white/10 text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors flex-shrink-0"
+            className="p-2 rounded-xl hover:bg-white/8 text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors flex-shrink-0"
             title="Upload chart image"
           >
             <ImagePlus size={18} />
@@ -153,7 +153,7 @@ export default function InputBar({ onSend, disabled }: InputBarProps) {
           <button
             onClick={handleSubmit}
             disabled={disabled || (!input.trim() && previews.length === 0)}
-            className="p-2 rounded-lg bg-[var(--accent)] hover:brightness-110 text-[var(--bg-root)] disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 flex-shrink-0"
+            className="p-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent)]/85 text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 flex-shrink-0"
           >
             {disabled ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
           </button>

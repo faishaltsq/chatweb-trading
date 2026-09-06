@@ -131,7 +131,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
 const markdownComponents = {
   pre({ children, ...props }: React.ComponentProps<'pre'>) {
     return (
-      <pre className="overflow-x-auto rounded-lg bg-[var(--bg-root)] border border-[var(--border)] p-4 my-3 text-sm" {...props}>
+      <pre className="overflow-x-auto rounded-xl bg-[var(--bg-surface)] border hairline border-[var(--border)] p-4 my-3 text-sm" {...props}>
         {children}
       </pre>
     );
@@ -140,7 +140,7 @@ const markdownComponents = {
     const isInline = !className;
     if (isInline) {
       return (
-        <code className="px-1.5 py-0.5 rounded bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--accent)] text-[0.85em] font-mono" {...props}>
+        <code className="px-1.5 py-0.5 rounded-md bg-[var(--bg-elevated)] border hairline border-[var(--border)] text-[var(--accent)] text-[0.85em] font-mono" {...props}>
           {children}
         </code>
       );
@@ -149,14 +149,14 @@ const markdownComponents = {
   },
   details({ children }: React.ComponentProps<'details'>) {
     return (
-      <details className="my-3 rounded-lg border border-[var(--info)]/20 bg-[var(--info)]/5 overflow-hidden">
+      <details className="my-3 rounded-xl border hairline border-[var(--info)]/15 bg-[var(--info)]/[0.04] overflow-hidden">
         {children}
       </details>
     );
   },
   summary({ children }: React.ComponentProps<'summary'>) {
     return (
-      <summary className="flex items-center gap-2 px-3 py-2 text-[var(--info)] text-xs font-medium hover:bg-[var(--info)]/10 transition-colors cursor-pointer">
+      <summary className="flex items-center gap-2 px-3 py-2.5 text-[var(--info)] text-xs font-medium hover:bg-[var(--info)]/8 transition-colors cursor-pointer">
         {children}
       </summary>
     );
@@ -165,10 +165,10 @@ const markdownComponents = {
     return <p className="mb-3 last:mb-0 leading-7">{children}</p>;
   },
   h1({ children }: React.ComponentProps<'h1'>) {
-    return <h1 className="text-xl font-bold mb-3 mt-4 text-[var(--text-primary)]">{children}</h1>;
+    return <h1 className="text-xl font-bold mb-3 mt-4 text-[var(--text-primary)] tracking-tight">{children}</h1>;
   },
   h2({ children }: React.ComponentProps<'h2'>) {
-    return <h2 className="text-lg font-bold mb-2 mt-4 text-[var(--text-primary)]">{children}</h2>;
+    return <h2 className="text-lg font-bold mb-2 mt-4 text-[var(--text-primary)] tracking-tight">{children}</h2>;
   },
   h3({ children }: React.ComponentProps<'h3'>) {
     return <h3 className="text-base font-semibold mb-2 mt-3 text-[var(--text-primary)]">{children}</h3>;
@@ -185,32 +185,32 @@ const markdownComponents = {
   table({ children }: React.ComponentProps<'table'>) {
     return (
       <div className="overflow-x-auto my-3">
-        <table className="w-full text-sm border border-[var(--border)] rounded-lg overflow-hidden">
+        <table className="w-full text-sm border hairline border-[var(--border)] rounded-xl overflow-hidden">
           {children}
         </table>
       </div>
     );
   },
   thead({ children }: React.ComponentProps<'thead'>) {
-    return <thead className="bg-white/5">{children}</thead>;
+    return <thead className="bg-white/[0.03]">{children}</thead>;
   },
   th({ children }: React.ComponentProps<'th'>) {
     return (
-      <th className="px-3 py-2 text-left font-semibold text-[var(--text-primary)] border-b border-[var(--border)]">
+      <th className="px-3 py-2 text-left font-semibold text-[var(--text-primary)] border-b hairline border-[var(--border)]">
         {children}
       </th>
     );
   },
   td({ children }: React.ComponentProps<'td'>) {
     return (
-      <td className="px-3 py-2 text-[var(--text-secondary)] border-b border-[var(--border)]">
+      <td className="px-3 py-2 text-[var(--text-secondary)] border-b hairline border-[var(--border)]">
         {children}
       </td>
     );
   },
   blockquote({ children }: React.ComponentProps<'blockquote'>) {
     return (
-      <blockquote className="border-l-4 border-[var(--accent)]/50 pl-4 my-3 text-[var(--text-secondary)] italic">
+      <blockquote className="border-l-2 border-[var(--accent)]/40 pl-4 my-3 text-[var(--text-secondary)] italic">
         {children}
       </blockquote>
     );

@@ -153,13 +153,13 @@ function CopyCell({ value }: { value: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="group/cell inline-flex items-center gap-1 hover:text-white transition-colors rounded px-1 -mx-1 hover:bg-white/10 font-mono"
+      className="group/cell inline-flex items-center gap-1 hover:text-white transition-colors rounded-md px-1.5 -mx-1.5 hover:bg-white/8 font-mono"
       title={`Copy ${value}`}
     >
       <span>{value}</span>
       <span className="opacity-0 group-hover/cell:opacity-100 transition-opacity">
         {copied
-          ? <Check size={11} className="text-[var(--accent)]" />
+          ? <Check size={11} className="text-[var(--bull)]" />
           : <Copy size={11} className="text-[var(--text-muted)]" />
         }
       </span>
@@ -172,14 +172,14 @@ function cellColor(field: string, _value: string, setupIndex: number, setups: st
   const isLong = /LONG|BUY/.test(setupName);
   const isShort = /SHORT|SELL/.test(setupName);
 
-  if (field === 'SL') return 'text-red-400';
-  if (field === 'RISK') return 'text-red-400';
-  if (/^TP/.test(field) && !field.startsWith('REWARD') && !field.startsWith('RR')) return 'text-[var(--accent)]';
-  if (field.startsWith('REWARD')) return 'text-[var(--accent)]';
+  if (field === 'SL') return 'text-[var(--bear)]';
+  if (field === 'RISK') return 'text-[var(--bear)]';
+  if (/^TP/.test(field) && !field.startsWith('REWARD') && !field.startsWith('RR')) return 'text-[var(--bull)]';
+  if (field.startsWith('REWARD')) return 'text-[var(--bull)]';
   if (field.startsWith('RR')) return 'text-[var(--warning)] font-bold';
   if (field === 'ENTRY') {
-    if (isLong) return 'text-[var(--accent)]';
-    if (isShort) return 'text-red-400';
+    if (isLong) return 'text-[var(--bull)]';
+    if (isShort) return 'text-[var(--bear)]';
     return 'text-[var(--text-primary)]';
   }
   return 'text-[var(--text-secondary)]';
@@ -210,8 +210,8 @@ function fieldLabel(field: string): string {
 
 function setupColor(name: string): string {
   const n = name.toUpperCase();
-  if (/LONG|BUY/.test(n)) return 'text-[var(--accent)]';
-  if (/SHORT|SELL/.test(n)) return 'text-red-400';
+  if (/LONG|BUY/.test(n)) return 'text-[var(--bull)]';
+  if (/SHORT|SELL/.test(n)) return 'text-[var(--bear)]';
   return 'text-[var(--info)]';
 }
 
@@ -223,15 +223,15 @@ export default function RRTable({ data }: RRTableProps) {
   const { setups, rows } = enriched;
 
   return (
-    <div className="my-3 overflow-x-auto rounded-lg border border-[var(--border-bright)]">
+    <div className="my-3 overflow-x-auto rounded-xl border hairline border-[var(--border-bright)]">
       <table className="w-full text-xs border-collapse">
         <thead>
           <tr className="bg-[var(--bg-surface)]">
-            <th className="px-3 py-2.5 text-left font-semibold text-[var(--text-muted)] border-b border-[var(--border)] border-r border-[var(--border)] w-32 sticky left-0 bg-[var(--bg-surface)] z-10">
+            <th className="px-3 py-2.5 text-left font-semibold text-[var(--text-muted)] border-b hairline border-[var(--border)] border-r hairline border-[var(--border)] w-32 sticky left-0 bg-[var(--bg-surface)] z-10">
               SETUP
             </th>
             {setups.map((s, i) => (
-              <th key={i} className={`px-3 py-2.5 text-center font-semibold border-b border-[var(--border)] ${i < setups.length - 1 ? 'border-r border-[var(--border)]' : ''} ${setupColor(s)}`}>
+              <th key={i} className={`px-3 py-2.5 text-center font-semibold border-b hairline border-[var(--border)] ${i < setups.length - 1 ? 'border-r hairline border-[var(--border)]' : ''} ${setupColor(s)}`}>
                 {s}
               </th>
             ))}
@@ -245,23 +245,23 @@ export default function RRTable({ data }: RRTableProps) {
             return (
               <tr
                 key={ri}
-                className={`border-b border-[var(--border)] transition-colors ${
+                className={`border-b hairline border-[var(--border)] transition-colors ${
                   isRR
-                    ? 'bg-[var(--warning)]/5'
+                    ? 'bg-[var(--warning)]/[0.04]'
                     : isCalc
-                    ? 'bg-white/[0.02]'
-                    : 'hover:bg-white/5'
+                    ? 'bg-white/[0.015]'
+                    : 'hover:bg-white/[0.03]'
                 }`}
               >
-                <td className={`px-3 py-2 font-medium border-r border-[var(--border)] sticky left-0 z-10 ${
-                  isRR ? 'bg-[var(--warning)]/5' : isCalc ? 'bg-[var(--bg-surface)]' : 'bg-[var(--bg-root)]'
+                <td className={`px-3 py-2 font-medium border-r hairline border-[var(--border)] sticky left-0 z-10 ${
+                  isRR ? 'bg-[var(--warning)]/[0.04]' : isCalc ? 'bg-[var(--bg-surface)]' : 'bg-[var(--bg-root)]'
                 } ${isCalc ? 'text-[var(--text-muted)] text-[11px]' : 'text-[var(--text-secondary)]'}`}>
                   {fieldLabel(row.field)}
                 </td>
                 {row.values.map((val, ci) => (
                   <td
                     key={ci}
-                    className={`px-3 py-2 text-center ${ci < setups.length - 1 ? 'border-r border-[var(--border)]' : ''} ${cellColor(row.field, val, ci, setups)}`}
+                    className={`px-3 py-2 text-center ${ci < setups.length - 1 ? 'border-r hairline border-[var(--border)]' : ''} ${cellColor(row.field, val, ci, setups)}`}
                   >
                     <CopyCell value={val} />
                   </td>

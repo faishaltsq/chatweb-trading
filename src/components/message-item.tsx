@@ -17,7 +17,7 @@ export default function MessageItem({ message }: MessageItemProps) {
       className={`flex gap-3 ${isUser ? 'justify-end' : 'justify-start'} group animate-messageIn`}
     >
       {!isUser && (
-        <div className="w-7 h-7 rounded-full bg-[var(--accent-subtle)] flex items-center justify-center flex-shrink-0 mt-1 border border-[var(--accent-dim)]">
+        <div className="w-7 h-7 rounded-full bg-[var(--accent-subtle)] flex items-center justify-center flex-shrink-0 mt-1 border hairline border-[var(--accent-dim)]">
           <Bot size={14} className="text-[var(--accent)]" />
         </div>
       )}
@@ -25,7 +25,7 @@ export default function MessageItem({ message }: MessageItemProps) {
       <div
         className={`max-w-[80%] ${
           isUser
-            ? 'bg-[var(--bg-elevated)] border border-[var(--border-bright)] text-white rounded-2xl rounded-tr-sm px-4 py-3'
+            ? 'bg-[var(--bg-elevated)] border hairline border-[var(--border-bright)] text-white rounded-2xl rounded-tr-md px-4 py-3'
             : 'text-[var(--text-primary)]'
         }`}
       >
@@ -57,7 +57,7 @@ export default function MessageItem({ message }: MessageItemProps) {
                 <img
                   src={part.url}
                   alt="chart"
-                  className="max-w-full rounded-lg border border-[var(--border)] max-h-96 object-contain"
+                  className="max-w-full rounded-xl border hairline border-[var(--border)] max-h-96 object-contain"
                 />
               </div>
             );
@@ -68,7 +68,7 @@ export default function MessageItem({ message }: MessageItemProps) {
       </div>
 
       {isUser && (
-        <div className="w-7 h-7 rounded-full bg-[var(--bg-hover)] flex items-center justify-center flex-shrink-0 mt-1 border border-[var(--border)]">
+        <div className="w-7 h-7 rounded-full bg-[var(--bg-hover)] flex items-center justify-center flex-shrink-0 mt-1 border hairline border-[var(--border)]">
           <User size={14} className="text-[var(--text-secondary)]" />
         </div>
       )}

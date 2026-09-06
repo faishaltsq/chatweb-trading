@@ -57,13 +57,13 @@ export function emptyTrade(): TradeFormData {
 
 export function statusColor(status: string): string {
   switch (status) {
-    case 'WIN': return 'text-emerald-400 bg-emerald-500/10';
-    case 'LOSS': return 'text-red-400 bg-red-500/10';
+    case 'WIN': return 'text-[#26a69a] bg-[#26a69a]/10';
+    case 'LOSS': return 'text-[#ef5350] bg-[#ef5350]/10';
     case 'BREAKEVEN': return 'text-amber-400 bg-amber-500/10';
-    default: return 'text-neutral-400 bg-white/5';
+    default: return 'text-[var(--text-muted)] bg-white/5';
   }
 }
 
 export function dirColor(dir: string): string {
-  return dir === 'BUY' ? 'text-emerald-400' : 'text-red-400';
+  return dir === 'BUY' ? 'text-[#26a69a]' : 'text-[#ef5350]';
 }

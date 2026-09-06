@@ -25,24 +25,30 @@ export default function JournalStats({ trades }: StatsProps) {
   const profitFactor = grossLoss > 0 ? (grossWin / grossLoss).toFixed(2) : grossWin > 0 ? '∞' : '0';
 
   const stats = [
-    { label: 'Total Trades', value: trades.length.toString(), sub: `${closed.length} closed` },
-    { label: 'Win Rate', value: `${winRate}%`, sub: `${wins.length}W / ${losses.length}L`, color: Number(winRate) >= 50 ? 'text-[var(--accent)]' : 'text-red-400' },
-    { label: 'Total PnL', value: `$${totalPnl.toFixed(2)}`, color: totalPnl >= 0 ? 'text-[var(--accent)]' : 'text-red-400' },
-    { label: 'Profit Factor', value: profitFactor, color: Number(profitFactor) >= 1 ? 'text-[var(--accent)]' : 'text-red-400' },
-    { label: 'Avg RR', value: `1:${avgRR}` },
+    { label: 'Total Trades', value: trades.length.toString(), sub: `${closed.length} closed`, color: '' },
+    { label: 'Win Rate', value: `${winRate}%`, sub: `${wins.length}W / ${losses.length}L`, color: Number(winRate) >= 50 ? 'bull' : 'bear' },
+    { label: 'Total PnL', value: `$${totalPnl.toFixed(2)}`, sub: '', color: totalPnl >= 0 ? 'bull' : 'bear' },
+    { label: 'Profit Factor', value: profitFactor, sub: '', color: Number(profitFactor) >= 1 ? 'bull' : 'bear' },
+    { label: 'Avg RR', value: `1:${avgRR}`, sub: '', color: '' },
   ];
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
       {stats.map((s) => (
-        <div key={s.label} className="group relative bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl px-4 py-3.5 hover:-translate-y-0.5 transition-all duration-200">
-          <div className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider font-medium">{s.label}</div>
-          <div className={`text-lg font-bold mt-1 font-mono ${s.color || 'text-[var(--text-primary)]'}`}>{s.value}</div>
+        <div
+          key={s.label}
+          className="relative bg-[var(--bg-surface)] border hairline border-[var(--border)] rounded-2xl px-4 py-4 hover:-translate-y-0.5 transition-all duration-200 group overflow-hidden"
+        >
+          <div className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none ${
+            s.color === 'bull' ? 'bg-[#26a69a]/[0.04]' : s.color === 'bear' ? 'bg-[#ef5350]/[0.04]' : ''
+          }`} />
+          <div className="text-[10px] text-[var(--text-muted)] uppercase tracking-widest font-medium mb-1.5">{s.label}</div>
+          <div className={`text-xl font-bold font-mono tracking-tight ${
+            s.color === 'bull' ? 'text-[#26a69a]' :
+            s.color === 'bear' ? 'text-[#ef5350]' :
+            'text-[var(--text-primary)]'
+          }`}>{s.value}</div>
           {s.sub && <div className="text-[11px] text-[var(--text-muted)] mt-0.5">{s.sub}</div>}
-          {s.color && (
-            <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity -z-10"
-              style={{ boxShadow: s.color.includes('accent') ? '0 0 20px var(--accent-glow)' : '0 0 20px rgba(239,68,68,0.1)' }} />
-          )}
         </div>
       ))}
     </div>

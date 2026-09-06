@@ -68,11 +68,11 @@ export default function TradeModal({ open, onClose, onSave, initial, title }: Tr
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm animate-fadeIn" onClick={onClose} />
-      <div className="relative z-10 bg-[var(--bg-surface)] border border-[var(--border-bright)] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-thin animate-slideUp shadow-2xl">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)] sticky top-0 bg-[var(--bg-surface)] z-10">
-          <h2 className="text-lg font-semibold text-[var(--text-primary)]">{title || 'New Trade'}</h2>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 text-[var(--text-secondary)] transition-colors">
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-xl animate-fadeIn" onClick={onClose} />
+      <div className="relative z-10 bg-[var(--bg-surface)] border hairline border-[var(--border-bright)] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-thin animate-slideUp shadow-2xl">
+        <div className="flex items-center justify-between px-6 py-4 border-b hairline border-[var(--border)] sticky top-0 bg-[var(--bg-surface)] z-10 rounded-t-2xl">
+          <h2 className="text-lg font-semibold text-[var(--text-primary)] tracking-tight">{title || 'New Trade'}</h2>
+          <button onClick={onClose} className="p-1.5 rounded-xl hover:bg-white/8 text-[var(--text-secondary)] transition-colors">
             <X size={18} />
           </button>
         </div>
@@ -126,7 +126,7 @@ export default function TradeModal({ open, onClose, onSave, initial, title }: Tr
                     onChange={(e) => setTP(i, Number(e.target.value))}
                     className="input-field flex-1 font-mono" placeholder={`TP${i + 1}`} />
                   <button type="button" onClick={() => removeTP(i)}
-                    className="p-2 rounded-lg hover:bg-red-500/20 text-red-400 transition-colors">
+                    className="p-2 rounded-xl hover:bg-[var(--bear)]/15 text-[var(--bear)] transition-colors">
                     <Trash2 size={14} />
                   </button>
                 </div>
@@ -179,7 +179,7 @@ export default function TradeModal({ open, onClose, onSave, initial, title }: Tr
             <div className="flex flex-wrap gap-1.5 mb-2">
               {form.tags.map((t) => (
                 <span key={t}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[var(--accent-subtle)] text-[var(--accent)] text-xs border border-[var(--accent-dim)]">
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[var(--accent-subtle)] text-[var(--accent)] text-xs border hairline border-[var(--accent-dim)]">
                   {t}
                   <button type="button" onClick={() => removeTag(t)} className="hover:text-white transition-colors">
                     <X size={10} />
@@ -192,22 +192,22 @@ export default function TradeModal({ open, onClose, onSave, initial, title }: Tr
                 onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }}
                 className="input-field flex-1" placeholder="Add tag..." />
               <button type="button" onClick={addTag}
-                className="px-3 py-1.5 rounded-lg bg-white/5 text-xs text-[var(--text-secondary)] hover:bg-white/10 transition-colors">Add</button>
+                className="px-3 py-1.5 rounded-xl bg-white/5 text-xs text-[var(--text-secondary)] hover:bg-white/8 transition-colors">Add</button>
             </div>
           </Field>
 
           <Field label="Chart Screenshot">
             {form.chartUrl ? (
               <div className="relative group">
-                <img src={form.chartUrl} alt="chart" className="max-h-40 rounded-lg border border-[var(--border)]" />
+                <img src={form.chartUrl} alt="chart" className="max-h-40 rounded-xl border hairline border-[var(--border)]" />
                 <button type="button" onClick={() => set('chartUrl', '')}
-                  className="absolute top-1 right-1 p-1 rounded bg-black/60 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                  className="absolute top-1 right-1 p-1 rounded-lg bg-black/60 text-[var(--bear)] opacity-0 group-hover:opacity-100 transition-opacity">
                   <X size={12} />
                 </button>
               </div>
             ) : (
               <button type="button" onClick={() => fileRef.current?.click()}
-                className="flex items-center gap-2 px-4 py-3 rounded-lg border border-dashed border-[var(--border)] hover:border-[var(--accent-dim)] text-[var(--text-muted)] text-xs transition-colors">
+                className="flex items-center gap-2 px-4 py-3 rounded-xl border hairline border-dashed border-[var(--border)] hover:border-[var(--accent-dim)] text-[var(--text-muted)] text-xs transition-colors">
                 <Upload size={14} /> Upload screenshot
               </button>
             )}
@@ -219,13 +219,12 @@ export default function TradeModal({ open, onClose, onSave, initial, title }: Tr
               className="input-field min-h-[80px] resize-y" placeholder="Entry rationale, market context, lessons..." />
           </Field>
 
-          <div className="flex justify-end gap-3 pt-2 border-t border-[var(--border)]">
+          <div className="flex justify-end gap-3 pt-2 border-t hairline border-[var(--border)]">
             <button type="button" onClick={onClose}
-              className="px-4 py-2 rounded-lg text-sm text-[var(--text-secondary)] hover:bg-white/5 transition-colors">Cancel</button>
+              className="px-4 py-2 rounded-xl text-sm text-[var(--text-secondary)] hover:bg-white/5 transition-colors">Cancel</button>
             <button type="submit"
-              className="group relative px-5 py-2 rounded-lg bg-[var(--accent)] hover:brightness-110 text-[var(--bg-root)] text-sm font-semibold transition-all duration-200">
+              className="px-5 py-2 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent)]/85 text-white text-sm font-semibold transition-all duration-200 shadow-[0_0_16px_var(--accent-glow)]">
               {initial ? 'Update Trade' : 'Add Trade'}
-              <div className="absolute inset-0 rounded-lg bg-[var(--accent-glow)] blur-md opacity-0 group-hover:opacity-100 transition-opacity -z-10" />
             </button>
           </div>
         </form>
@@ -237,7 +236,7 @@ export default function TradeModal({ open, onClose, onSave, initial, title }: Tr
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-xs text-[var(--text-muted)] mb-1.5 font-medium">{label}</label>
+      <label className="block text-[10px] text-[var(--text-muted)] mb-1.5 font-medium uppercase tracking-wider">{label}</label>
       {children}
     </div>
   );

@@ -12,7 +12,9 @@ interface ChartsProps {
   trades: Trade[];
 }
 
-const COLORS = { WIN: '#00e5a0', LOSS: '#ef4444', BREAKEVEN: '#f5a623', OPEN: '#4a5568' };
+const TV_BULL = '#26a69a';
+const TV_BEAR = '#ef5350';
+const TV_COLORS = { WIN: TV_BULL, LOSS: TV_BEAR, BREAKEVEN: '#ff9800', OPEN: '#434651' };
 
 export default function JournalCharts({ trades }: ChartsProps) {
   const [tab, setTab] = useState<'equity' | 'monthly' | 'distribution'>('equity');
@@ -20,7 +22,7 @@ export default function JournalCharts({ trades }: ChartsProps) {
 
   if (closed.length === 0) {
     return (
-      <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl px-6 py-10 text-center text-[var(--text-muted)] text-xs">
+      <div className="bg-[var(--bg-surface)] border hairline border-[var(--border)] rounded-2xl px-6 py-10 text-center text-[var(--text-muted)] text-xs mb-4">
         Charts will appear after you close some trades.
       </div>
     );
@@ -30,7 +32,7 @@ export default function JournalCharts({ trades }: ChartsProps) {
     let cum = 0;
     return closed.map((t) => {
       cum += t.pnlDollar ?? 0;
-      return { date: t.date, pnl: cum };
+      return { date: t.date, pnl: parseFloat(cum.toFixed(2)) };
     });
   })();
 
@@ -40,7 +42,7 @@ export default function JournalCharts({ trades }: ChartsProps) {
       const m = t.date.slice(0, 7);
       months[m] = (months[m] || 0) + (t.pnlDollar ?? 0);
     });
-    return Object.entries(months).sort().map(([month, pnl]) => ({ month, pnl }));
+    return Object.entries(months).sort().map(([month, pnl]) => ({ month, pnl: parseFloat(pnl.toFixed(2)) }));
   })();
 
   const distData = (() => {
@@ -52,25 +54,29 @@ export default function JournalCharts({ trades }: ChartsProps) {
   const tabs = [
     { id: 'equity' as const, label: 'Equity Curve', icon: TrendingUp },
     { id: 'monthly' as const, label: 'Monthly PnL', icon: BarChart3 },
-    { id: 'distribution' as const, label: 'Win/Loss', icon: PieChartIcon },
+    { id: 'distribution' as const, label: 'Win / Loss', icon: PieChartIcon },
   ];
 
   const tooltipStyle = {
     background: 'var(--bg-elevated)',
-    border: '1px solid var(--border-bright)',
-    borderRadius: '8px',
+    border: '0.5px solid rgba(255,255,255,0.1)',
+    borderRadius: '12px',
     fontSize: '11px',
     color: 'var(--text-primary)',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
   };
 
+  const lastEquity = equityData[equityData.length - 1]?.pnl ?? 0;
+  const equityColor = lastEquity >= 0 ? TV_BULL : TV_BEAR;
+
   return (
-    <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden mb-4">
-      <div className="flex border-b border-[var(--border)]">
+    <div className="bg-[var(--bg-surface)] border hairline border-[var(--border)] rounded-2xl overflow-hidden mb-4">
+      <div className="flex border-b hairline border-[var(--border)]">
         {tabs.map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium transition-all duration-200 ${
+            className={`flex items-center gap-1.5 px-4 py-3 text-xs font-medium transition-all duration-200 ${
               tab === t.id
                 ? 'text-[var(--accent)] border-b-2 border-[var(--accent)] bg-[var(--accent-subtle)]'
                 : 'text-[var(--text-muted)] hover:text-white'
@@ -81,15 +87,15 @@ export default function JournalCharts({ trades }: ChartsProps) {
         ))}
       </div>
 
-      <div className="p-4 h-80">
+      <div className="p-5 h-72">
         {tab === 'equity' && (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={equityData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-              <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} />
-              <YAxis tick={{ fontSize: 10, fill: 'var(--text-muted)' }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" />
+              <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} tickLine={false} axisLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: 'var(--text-muted)' }} tickLine={false} axisLine={false} />
               <Tooltip contentStyle={tooltipStyle} labelStyle={{ color: 'var(--text-secondary)' }} />
-              <Line type="monotone" dataKey="pnl" stroke="var(--accent)" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="pnl" stroke={equityColor} strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         )}
@@ -97,13 +103,13 @@ export default function JournalCharts({ trades }: ChartsProps) {
         {tab === 'monthly' && (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={monthlyData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-              <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} />
-              <YAxis tick={{ fontSize: 10, fill: 'var(--text-muted)' }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" />
+              <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'var(--text-muted)' }} tickLine={false} axisLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: 'var(--text-muted)' }} tickLine={false} axisLine={false} />
               <Tooltip contentStyle={tooltipStyle} />
               <Bar dataKey="pnl" radius={[4, 4, 0, 0]}>
                 {monthlyData.map((entry, i) => (
-                  <Cell key={i} fill={entry.pnl >= 0 ? '#00e5a0' : '#ef4444'} />
+                  <Cell key={i} fill={entry.pnl >= 0 ? TV_BULL : TV_BEAR} />
                 ))}
               </Bar>
             </BarChart>
@@ -113,9 +119,9 @@ export default function JournalCharts({ trades }: ChartsProps) {
         {tab === 'distribution' && (
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
-              <Pie data={distData} cx="50%" cy="50%" outerRadius={100} dataKey="value" label={({ name, value }) => `${name}: ${value}`}>
+              <Pie data={distData} cx="50%" cy="50%" outerRadius={90} innerRadius={40} dataKey="value" label={({ name, value }) => `${name}: ${value}`} paddingAngle={2}>
                 {distData.map((entry, i) => (
-                  <Cell key={i} fill={COLORS[entry.name as keyof typeof COLORS] || '#4a5568'} />
+                  <Cell key={i} fill={TV_COLORS[entry.name as keyof typeof TV_COLORS] || '#434651'} />
                 ))}
               </Pie>
               <Tooltip contentStyle={tooltipStyle} />

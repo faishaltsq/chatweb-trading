@@ -42,13 +42,13 @@ export default function FilterBar({ filter, onChange }: FilterBarProps) {
           <input
             value={filter.search}
             onChange={(e) => set('search', e.target.value)}
-            placeholder="Search notes..."
-            className="w-full bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg pl-9 pr-3 py-2 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent)] focus:shadow-[0_0_0_1px_var(--accent-dim),0_0_12px_var(--accent-glow)] transition-all duration-200"
+            placeholder="Search trades..."
+            className="w-full bg-[var(--bg-surface)] border hairline border-[var(--border)] rounded-xl pl-9 pr-3 py-2 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent)] focus:shadow-[0_0_0_3px_var(--accent-glow)] transition-all duration-200"
           />
         </div>
         <button
           onClick={() => setExpanded(!expanded)}
-          className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs border transition-all duration-200 ${
+          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs border hairline transition-all duration-200 ${
             hasFilter
               ? 'text-[var(--accent)] bg-[var(--accent-subtle)] border-[var(--accent-dim)]'
               : 'text-[var(--text-secondary)] border-[var(--border)] hover:bg-white/5'
@@ -58,7 +58,7 @@ export default function FilterBar({ filter, onChange }: FilterBarProps) {
         </button>
         {hasFilter && (
           <button onClick={clear}
-            className="flex items-center gap-1 px-3 py-2 rounded-lg text-xs text-red-400 hover:bg-red-500/10 border border-[var(--border)] transition-colors">
+            className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs text-[var(--bear)] hover:bg-[var(--bear)]/10 border hairline border-[var(--border)] transition-colors">
             <X size={14} /> Clear
           </button>
         )}
@@ -66,40 +66,40 @@ export default function FilterBar({ filter, onChange }: FilterBarProps) {
 
       <div className={`grid-expand ${expanded ? 'open' : ''}`}>
         <div>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-2 p-3 bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-2 p-3 bg-[var(--bg-surface)] border hairline border-[var(--border)] rounded-2xl">
             <div>
-              <label className="text-[11px] text-[var(--text-muted)] block mb-1 font-medium">Pair</label>
+              <label className="text-[10px] text-[var(--text-muted)] block mb-1 font-medium uppercase tracking-wider">Pair</label>
               <select value={filter.pair} onChange={(e) => set('pair', e.target.value)}
-                className="w-full bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg px-2 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent)] transition-colors">
+                className="w-full bg-[var(--bg-elevated)] border hairline border-[var(--border)] rounded-xl px-2 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent)] transition-colors">
                 <option value="">All</option>
                 {PAIRS.map((p) => <option key={p}>{p}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-[11px] text-[var(--text-muted)] block mb-1 font-medium">Status</label>
+              <label className="text-[10px] text-[var(--text-muted)] block mb-1 font-medium uppercase tracking-wider">Status</label>
               <select value={filter.status} onChange={(e) => set('status', e.target.value)}
-                className="w-full bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg px-2 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent)] transition-colors">
+                className="w-full bg-[var(--bg-elevated)] border hairline border-[var(--border)] rounded-xl px-2 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent)] transition-colors">
                 <option value="">All</option>
                 {STATUSES.map((s) => <option key={s}>{s}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-[11px] text-[var(--text-muted)] block mb-1 font-medium">Direction</label>
+              <label className="text-[10px] text-[var(--text-muted)] block mb-1 font-medium uppercase tracking-wider">Direction</label>
               <select value={filter.direction} onChange={(e) => set('direction', e.target.value)}
-                className="w-full bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg px-2 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent)] transition-colors">
+                className="w-full bg-[var(--bg-elevated)] border hairline border-[var(--border)] rounded-xl px-2 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent)] transition-colors">
                 <option value="">All</option>
                 {DIRECTIONS.map((d) => <option key={d}>{d}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-[11px] text-[var(--text-muted)] block mb-1 font-medium">From</label>
+              <label className="text-[10px] text-[var(--text-muted)] block mb-1 font-medium uppercase tracking-wider">From</label>
               <input type="date" value={filter.dateFrom} onChange={(e) => set('dateFrom', e.target.value)}
-                className="w-full bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg px-2 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent)] transition-colors" />
+                className="w-full bg-[var(--bg-elevated)] border hairline border-[var(--border)] rounded-xl px-2 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent)] transition-colors" />
             </div>
             <div>
-              <label className="text-[11px] text-[var(--text-muted)] block mb-1 font-medium">To</label>
+              <label className="text-[10px] text-[var(--text-muted)] block mb-1 font-medium uppercase tracking-wider">To</label>
               <input type="date" value={filter.dateTo} onChange={(e) => set('dateTo', e.target.value)}
-                className="w-full bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg px-2 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent)] transition-colors" />
+                className="w-full bg-[var(--bg-elevated)] border hairline border-[var(--border)] rounded-xl px-2 py-1.5 text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent)] transition-colors" />
             </div>
           </div>
         </div>

@@ -25,30 +25,30 @@ export default function JournalTable({ trades, customColumns = [], customValues 
   }
 
   return (
-    <div className="overflow-x-auto border border-[var(--border)] rounded-xl">
+    <div className="overflow-x-auto border hairline border-[var(--border)] rounded-2xl">
       <table className="w-full text-xs border-collapse min-w-[1200px]">
         <thead>
           <tr className="bg-[var(--bg-surface)] text-[var(--text-muted)] text-left">
             <th className="w-8 px-2 py-3" />
-            <th className="px-3 py-3 font-semibold">Date</th>
-            <th className="px-3 py-3 font-semibold">Pair</th>
-            <th className="px-3 py-3 font-semibold">Dir</th>
-            <th className="px-3 py-3 font-semibold">TF</th>
-            <th className="px-3 py-3 font-semibold text-right">Entry</th>
-            <th className="px-3 py-3 font-semibold text-right">Stop Loss</th>
-            <th className="px-3 py-3 font-semibold text-right">Take Profit</th>
-            <th className="px-3 py-3 font-semibold text-right">Lot</th>
-            <th className="px-3 py-3 font-semibold text-center">Status</th>
-            <th className="px-3 py-3 font-semibold text-right">PnL ($)</th>
-            <th className="px-3 py-3 font-semibold text-right">PnL (pts)</th>
-            <th className="px-3 py-3 font-semibold text-center">Rating</th>
-            <th className="px-3 py-3 font-semibold">Emotion</th>
-            <th className="px-3 py-3 font-semibold">Tags</th>
-            <th className="px-3 py-3 font-semibold w-8">Img</th>
+            <th className="px-3 py-3 font-semibold text-[10px] uppercase tracking-wider">Date</th>
+            <th className="px-3 py-3 font-semibold text-[10px] uppercase tracking-wider">Pair</th>
+            <th className="px-3 py-3 font-semibold text-[10px] uppercase tracking-wider">Dir</th>
+            <th className="px-3 py-3 font-semibold text-[10px] uppercase tracking-wider">TF</th>
+            <th className="px-3 py-3 font-semibold text-right text-[10px] uppercase tracking-wider">Entry</th>
+            <th className="px-3 py-3 font-semibold text-right text-[10px] uppercase tracking-wider">Stop Loss</th>
+            <th className="px-3 py-3 font-semibold text-right text-[10px] uppercase tracking-wider">Take Profit</th>
+            <th className="px-3 py-3 font-semibold text-right text-[10px] uppercase tracking-wider">Lot</th>
+            <th className="px-3 py-3 font-semibold text-center text-[10px] uppercase tracking-wider">Status</th>
+            <th className="px-3 py-3 font-semibold text-right text-[10px] uppercase tracking-wider">PnL ($)</th>
+            <th className="px-3 py-3 font-semibold text-right text-[10px] uppercase tracking-wider">PnL (pts)</th>
+            <th className="px-3 py-3 font-semibold text-center text-[10px] uppercase tracking-wider">Rating</th>
+            <th className="px-3 py-3 font-semibold text-[10px] uppercase tracking-wider">Emotion</th>
+            <th className="px-3 py-3 font-semibold text-[10px] uppercase tracking-wider">Tags</th>
+            <th className="px-3 py-3 font-semibold w-8 text-[10px] uppercase tracking-wider">Img</th>
             {customColumns.map((col) => (
-              <th key={col.id} className="px-3 py-3 font-semibold text-[var(--info)]">{col.name}</th>
+              <th key={col.id} className="px-3 py-3 font-semibold text-[var(--info)] text-[10px] uppercase tracking-wider">{col.name}</th>
             ))}
-            <th className="px-3 py-3 font-semibold w-20">Actions</th>
+            <th className="px-3 py-3 font-semibold w-20 text-[10px] uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -87,13 +87,13 @@ function TradeRow({ trade, customColumns, customValues, onEdit, onDelete, onInli
   })();
 
   const pnlClass = (trade.pnlDollar ?? 0) > 0
-    ? 'text-[var(--accent)]'
+    ? 'text-[#26a69a]'
     : (trade.pnlDollar ?? 0) < 0
-    ? 'text-red-400'
+    ? 'text-[#ef5350]'
     : 'text-[var(--text-muted)]';
 
   return (
-    <tr className="border-t border-[var(--border)] hover:bg-white/[0.03] group transition-colors">
+    <tr className="border-t hairline border-[var(--border)] hover:bg-white/[0.025] group transition-colors">
       <td className="px-2 py-2.5 text-[var(--text-muted)] cursor-grab">
         <GripVertical size={12} />
       </td>
@@ -109,10 +109,10 @@ function TradeRow({ trade, customColumns, customValues, onEdit, onDelete, onInli
       <td className="px-3 py-2.5 text-right text-[var(--text-secondary)] font-mono">
         <EditableCell value={trade.entryPrice?.toString() ?? ''} onSave={(v) => onInlineUpdate(trade.id, 'entryPrice', Number(v) || null)} type="number" />
       </td>
-      <td className="px-3 py-2.5 text-right text-red-400 font-mono">
+      <td className="px-3 py-2.5 text-right text-[#ef5350] font-mono">
         <EditableCell value={trade.stopLoss?.toString() ?? ''} onSave={(v) => onInlineUpdate(trade.id, 'stopLoss', Number(v) || null)} type="number" />
       </td>
-      <td className="px-3 py-2.5 text-right text-[var(--accent)] text-[11px] font-mono">
+      <td className="px-3 py-2.5 text-right text-[#26a69a] text-[11px] font-mono">
         {tps.length > 0 ? tps.join(' / ') : '-'}
       </td>
       <td className="px-3 py-2.5 text-right text-[var(--text-secondary)] font-mono">
@@ -143,7 +143,7 @@ function TradeRow({ trade, customColumns, customValues, onEdit, onDelete, onInli
       <td className="px-3 py-2.5">
         <div className="flex gap-1 flex-wrap">
           {tags.map((t: string) => (
-            <span key={t} className="px-1.5 py-0.5 rounded bg-white/5 text-[var(--text-muted)] text-[10px]">{t}</span>
+            <span key={t} className="px-1.5 py-0.5 rounded-md bg-white/5 text-[var(--text-muted)] text-[10px]">{t}</span>
           ))}
         </div>
       </td>
@@ -161,10 +161,10 @@ function TradeRow({ trade, customColumns, customValues, onEdit, onDelete, onInli
       ))}
       <td className="px-3 py-2.5">
         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button onClick={() => onEdit(trade)} className="p-1 rounded hover:bg-white/10 text-[var(--text-muted)] hover:text-white transition-colors">
+          <button onClick={() => onEdit(trade)} className="p-1 rounded-lg hover:bg-white/8 text-[var(--text-muted)] hover:text-white transition-colors">
             <Pencil size={12} />
           </button>
-          <button onClick={() => onDelete(trade.id)} className="p-1 rounded hover:bg-red-500/20 text-[var(--text-muted)] hover:text-red-400 transition-colors">
+          <button onClick={() => onDelete(trade.id)} className="p-1 rounded-lg hover:bg-[var(--bear)]/15 text-[var(--text-muted)] hover:text-[var(--bear)] transition-colors">
             <Trash2 size={12} />
           </button>
         </div>
@@ -181,7 +181,7 @@ function EditableCell({ value, onSave, type = 'text' }: {
 
   if (!editing) {
     return (
-      <span className="cursor-pointer hover:bg-white/5 rounded px-1 -mx-1 transition-colors" onClick={() => { setVal(value); setEditing(true); }}>
+      <span className="cursor-pointer hover:bg-white/5 rounded-md px-1 -mx-1 transition-colors" onClick={() => { setVal(value); setEditing(true); }}>
         {value || '-'}
       </span>
     );
@@ -193,7 +193,7 @@ function EditableCell({ value, onSave, type = 'text' }: {
       onChange={(e) => setVal(e.target.value)}
       onBlur={() => { onSave(val); setEditing(false); }}
       onKeyDown={(e) => { if (e.key === 'Enter') { onSave(val); setEditing(false); } if (e.key === 'Escape') setEditing(false); }}
-      className="w-full bg-[var(--bg-elevated)] border border-[var(--accent)] rounded px-1.5 py-0.5 text-xs text-[var(--text-primary)] outline-none shadow-[0_0_8px_var(--accent-glow)]"
+      className="w-full bg-[var(--bg-elevated)] border hairline border-[var(--accent)] rounded-lg px-1.5 py-0.5 text-xs text-[var(--text-primary)] outline-none shadow-[0_0_0_3px_var(--accent-glow)]"
     />
   );
 }
@@ -203,7 +203,7 @@ function InlineSelect({ value, options, onSave, className = '' }: {
 }) {
   return (
     <select value={value} onChange={(e) => onSave(e.target.value)}
-      className={`bg-transparent border-none outline-none cursor-pointer text-xs font-semibold px-1.5 py-0.5 rounded hover:bg-white/5 transition-colors ${className}`}>
+      className={`bg-transparent border-none outline-none cursor-pointer text-xs font-semibold px-1.5 py-0.5 rounded-lg hover:bg-white/5 transition-colors ${className}`}>
       {options.map((o) => <option key={o} value={o}>{o}</option>)}
     </select>
   );
