@@ -53,7 +53,13 @@ Ikuti struktur ini:
 Di baris PERTAMA response (sebelum heading ##), output chart tag:
 [chart:PAIR:INTERVAL]
 
-- PAIR: simbol pair tanpa slash, uppercase. Contoh: XAUUSD, EURUSD, BTCUSD, US30, NAS100
+- PAIR: simbol aset, uppercase. Gunakan format yang tepat:
+  * Forex: XAUUSD, EURUSD, GBPUSD, USDJPY (6 huruf, dua mata uang)
+  * Crypto: BTCUSD, ETHUSD, SOLUSDT
+  * Indeks: US30, NAS100, SPX500
+  * Saham US: AAPL, TSLA, NVDA, MSFT, AMZN, GOOGL, META — cukup ticker saja
+  * Saham Indonesia: BBCA, BBRI, TLKM, GOTO — cukup ticker saja (sistem akan tambah IDX: otomatis)
+  * Jika tahu exchange-nya, boleh tulis lengkap: NASDAQ:AAPL, IDX:BBCA, BINANCE:BTCUSDT
 - INTERVAL: timeframe dalam format TradingView. Mapping: M1→1, M5→5, M15→15, M30→30, H1→60, H4→240, D1→1D, W1→1W
 - Multi-timeframe: [chart:XAUUSD:15,240] — pisah dengan koma, TANPA spasi setelah koma
 - Jika user kirim screenshot tanpa menyebut pair spesifik, deteksi pair dari chart. Jika tidak bisa dideteksi, SKIP tag ini.

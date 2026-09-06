@@ -3,30 +3,135 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
 
+// Specific mapped assets (Forex, Commodities, Indices, Crypto)
 const SYMBOL_MAP: Record<string, string> = {
+  // Commodities & Metals
   XAUUSD: 'OANDA:XAUUSD',
   GOLD: 'OANDA:XAUUSD',
   XAGUSD: 'OANDA:XAGUSD',
   SILVER: 'OANDA:XAGUSD',
-  EURUSD: 'OANDA:EURUSD',
-  GBPUSD: 'OANDA:GBPUSD',
-  USDJPY: 'OANDA:USDJPY',
-  AUDUSD: 'OANDA:AUDUSD',
-  USDCAD: 'OANDA:USDCAD',
-  NZDUSD: 'OANDA:NZDUSD',
-  USDCHF: 'OANDA:USDCHF',
-  GBPJPY: 'OANDA:GBPJPY',
-  EURJPY: 'OANDA:EURJPY',
-  EURGBP: 'OANDA:EURGBP',
+  USOIL: 'TVC:USOIL',
+  UKOIL: 'TVC:UKOIL',
+
+  // Major & Cross Forex
+  EURUSD: 'FX:EURUSD',
+  GBPUSD: 'FX:GBPUSD',
+  USDJPY: 'FX:USDJPY',
+  AUDUSD: 'FX:AUDUSD',
+  USDCAD: 'FX:USDCAD',
+  NZDUSD: 'FX:NZDUSD',
+  USDCHF: 'FX:USDCHF',
+  GBPJPY: 'FX:GBPJPY',
+  EURJPY: 'FX:EURJPY',
+  EURGBP: 'FX:EURGBP',
+  AUDJPY: 'FX:AUDJPY',
+  CADJPY: 'FX:CADJPY',
+  CHFJPY: 'FX:CHFJPY',
+  EURCAD: 'FX:EURCAD',
+  EURAUD: 'FX:EURAUD',
+  GBPCHF: 'FX:GBPCHF',
+  GBPAUD: 'FX:GBPAUD',
+
+  // Indices
+  US30: 'DJ:DJI',
+  DJI: 'DJ:DJI',
+  NAS100: 'NASDAQ:NDX',
+  NDX: 'NASDAQ:NDX',
+  SPX500: 'SP:SPX',
+  SPX: 'SP:SPX',
+  DXY: 'TVC:DXY',
+
+  // Crypto
   BTCUSD: 'BINANCE:BTCUSDT',
   BTCUSDT: 'BINANCE:BTCUSDT',
   ETHUSD: 'BINANCE:ETHUSDT',
   ETHUSDT: 'BINANCE:ETHUSDT',
-  US30: 'FOREXCOM:DJI',
-  NAS100: 'NASDAQ:NDX',
-  SPX500: 'SP:SPX',
-  USOIL: 'TVC:USOIL',
+  SOLUSD: 'BINANCE:SOLUSDT',
+  SOLUSDT: 'BINANCE:SOLUSDT',
+  BNBUSD: 'BINANCE:BNBUSDT',
+  XRPUSD: 'BINANCE:XRPUSDT',
+  DOGEUSD: 'BINANCE:DOGEUSDT',
+
+  // Popular US Stocks (direct mapping)
+  AAPL: 'NASDAQ:AAPL',
+  TSLA: 'NASDAQ:TSLA',
+  NVDA: 'NASDAQ:NVDA',
+  MSFT: 'NASDAQ:MSFT',
+  AMZN: 'NASDAQ:AMZN',
+  GOOGL: 'NASDAQ:GOOGL',
+  GOOG: 'NASDAQ:GOOG',
+  META: 'NASDAQ:META',
+  AMD: 'NASDAQ:AMD',
+  NFLX: 'NASDAQ:NFLX',
+  INTC: 'NASDAQ:INTC',
+  PLTR: 'NASDAQ:PLTR',
+  COIN: 'NASDAQ:COIN',
+  BABA: 'NYSE:BABA',
+
+  // Popular Indonesian Stocks (IDX)
+  BBCA: 'IDX:BBCA',
+  BBRI: 'IDX:BBRI',
+  BMRI: 'IDX:BMRI',
+  BBNI: 'IDX:BBNI',
+  TLKM: 'IDX:TLKM',
+  ASII: 'IDX:ASII',
+  GOTO: 'IDX:GOTO',
+  ANTM: 'IDX:ANTM',
+  UNVR: 'IDX:UNVR',
+  ICBP: 'IDX:ICBP',
+  INDF: 'IDX:INDF',
+  ADRO: 'IDX:ADRO',
+  PGAS: 'IDX:PGAS',
 };
+
+// Known forex currencies (3 chars)
+const CURRENCIES = new Set(['USD','EUR','GBP','JPY','AUD','CAD','NZD','CHF','SGD','HKD','CNH','TRY','MXN','ZAR','NOK','SEK','DKK','INR','BRL','THB','IDR']);
+
+function resolveTradingViewSymbol(rawPair: string): string {
+  const upper = rawPair.trim().toUpperCase();
+
+  // 1. If AI / user already provided explicit exchange prefix (e.g. "NASDAQ:AAPL", "IDX:BBCA", "BINANCE:BTCUSDT")
+  if (upper.includes(':')) {
+    return upper;
+  }
+
+  const clean = upper.replace(/[^A-Z0-9]/g, '');
+
+  // 2. Direct hit in dictionary
+  if (SYMBOL_MAP[clean]) {
+    return SYMBOL_MAP[clean];
+  }
+
+  // 3. Forex pair detection: 6 letters composed of two known 3-letter currencies (e.g. EURTRY, AUDNZD)
+  if (clean.length === 6) {
+    const c1 = clean.slice(0, 3);
+    const c2 = clean.slice(3, 6);
+    if (CURRENCIES.has(c1) && CURRENCIES.has(c2)) {
+      return `FX:${clean}`;
+    }
+  }
+
+  // 4. Crypto detection: ends with USDT or USD and longer than 5 chars (e.g. ADAUSDT, AVAXUSD)
+  if (clean.endsWith('USDT') && clean.length > 4) {
+    return `BINANCE:${clean}`;
+  }
+
+  // 5. Indonesian stocks: 4 uppercase letters common format (often ending in A, I, etc.),
+  // but if user passes e.g. "BBCA.JK" or "IDX_BBCA"
+  if (upper.endsWith('.JK') || upper.startsWith('IDX')) {
+    const ticker = clean.replace(/^IDX/, '').replace(/JK$/, '');
+    return `IDX:${ticker}`;
+  }
+
+  // 6. Default for stocks: if 1-5 alphabetic chars without numbers (e.g. AAPL, DIS, JNJ, V, F)
+  // Let TradingView resolve directly or fallback to stock ticker
+  if (/^[A-Z]{1,5}$/.test(clean)) {
+    return clean;
+  }
+
+  // 7. Ultimate fallback: just return the clean symbol, TradingView widget will search best match
+  return clean;
+}
 
 const INTERVAL_LABELS: Record<string, string> = {
   '1': '1M',
@@ -52,8 +157,8 @@ interface TVChartProps {
 }
 
 export default function TVChart({ pair, intervals = [] }: TVChartProps) {
-  const cleanPair = pair.toUpperCase().replace(/[^A-Z0-9]/g, '');
-  const tvSymbol = SYMBOL_MAP[cleanPair] || `OANDA:${cleanPair}`;
+  const tvSymbol = resolveTradingViewSymbol(pair);
+  const cleanPair = pair.toUpperCase().trim();
 
   // Timeframes: use parsed intervals if provided, else fallback to standard defaults
   const availableIntervals = intervals.length > 0 ? intervals : DEFAULT_TIMEFRAMES;

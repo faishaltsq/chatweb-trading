@@ -24,13 +24,30 @@ interface ExtractedChart {
 function extractChartTag(content: string): { cleaned: string; chart: ExtractedChart | null } {
   let chart: ExtractedChart | null = null;
 
+  // Supports: [chart:XAUUSD:240] [chart:NASDAQ:AAPL:240] [chart:IDX:BBCA:1D,1W] [chart:AAPL]
   const cleaned = content.replace(
-    /\[chart:\s*([A-Za-z0-9_]+)\s*(?::\s*([0-9A-Za-z, ]+))?\s*\]/gi,
-    (_, pair, intervalsRaw) => {
+    /\[chart:\s*([A-Za-z0-9_:]+?)\s*(?::\s*([0-9A-Za-z,]+))?\s*\]/gi,
+    (fullMatch, rawPair, intervalsRaw) => {
       if (!chart) {
-        const intervals = intervalsRaw
-          ? intervalsRaw.split(',').map((s: string) => s.trim().toUpperCase()).filter(Boolean)
-          : [];
+        // If rawPair contains `:` and NO intervals were captured, the last segment might be the interval
+        // e.g. [chart:NASDAQ:AAPL:240] parses as rawPair="NASDAQ:AAPL:240" intervalsRaw=undefined
+        let pair = rawPair;
+        let intervals: string[] = [];
+
+        if (intervalsRaw) {
+          intervals = intervalsRaw.split(',').map((s: string) => s.trim().toUpperCase()).filter(Boolean);
+        }
+
+        // Handle exchange:ticker:interval pattern
+        const colonParts = pair.split(':');
+        if (colonParts.length >= 3) {
+          const lastPart = colonParts[colonParts.length - 1];
+          if (/^[0-9]+[A-Z]?$|^[0-9]+,[0-9A-Z,]+$|^1[DMW]$/i.test(lastPart)) {
+            intervals = lastPart.split(',').map((s: string) => s.trim().toUpperCase());
+            pair = colonParts.slice(0, -1).join(':');
+          }
+        }
+
         chart = { pair: pair.toUpperCase(), intervals };
       }
       return '';
@@ -42,6 +59,8 @@ function extractChartTag(content: string): { cleaned: string; chart: ExtractedCh
       'XAUUSD','GOLD','XAGUSD','SILVER','EURUSD','GBPUSD','USDJPY','AUDUSD',
       'USDCAD','NZDUSD','USDCHF','GBPJPY','EURJPY','EURGBP','BTCUSD','BTCUSDT',
       'ETHUSD','ETHUSDT','US30','NAS100','SPX500','USOIL',
+      'AAPL','TSLA','NVDA','MSFT','AMZN','GOOGL','META','AMD',
+      'BBCA','BBRI','BMRI','BBNI','TLKM','ASII','GOTO','ANTM',
     ];
     const TF_MAP: Record<string, string> = {
       'M1':'1','M5':'5','M15':'15','M30':'30',
