@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
 import RRTable from './rr-table';
+import TVChart from './tv-chart';
 
 interface MarkdownRendererProps {
   content: string;
@@ -13,6 +14,29 @@ interface MarkdownRendererProps {
 interface ExtractedTable {
   id: string;
   data: string;
+}
+
+interface ExtractedChart {
+  pair: string;
+  intervals: string[];
+}
+
+function extractChartTag(content: string): { cleaned: string; chart: ExtractedChart | null } {
+  let chart: ExtractedChart | null = null;
+
+  // Match [chart:PAIR:INTERVALS] e.g. [chart:XAUUSD:15,240] or [chart:XAUUSD:240]
+  const cleaned = content.replace(
+    /\[chart:\s*([A-Za-z0-9_]+)\s*(?::\s*([0-9A-Za-z, ]+))?\s*\]/i,
+    (_, pair, intervalsRaw) => {
+      const intervals = intervalsRaw
+        ? intervalsRaw.split(',').map((s: string) => s.trim().toUpperCase()).filter(Boolean)
+        : [];
+      chart = { pair: pair.toUpperCase(), intervals };
+      return '';
+    }
+  );
+
+  return { cleaned: cleaned.trimStart(), chart };
 }
 
 function extractRRTables(content: string): { cleaned: string; tables: ExtractedTable[] } {
@@ -70,17 +94,25 @@ function extractRRTables(content: string): { cleaned: string; tables: ExtractedT
 }
 
 export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
-  const { cleaned, tables } = extractRRTables(content);
+  const { cleaned: withoutChart, chart } = extractChartTag(content);
+  const { cleaned, tables } = extractRRTables(withoutChart);
+
+  const chartNode = chart ? (
+    <TVChart key="tv-chart" pair={chart.pair} intervals={chart.intervals} />
+  ) : null;
 
   if (tables.length === 0) {
     return (
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeRaw, rehypeHighlight]}
-        components={markdownComponents}
-      >
-        {content}
-      </ReactMarkdown>
+      <>
+        {chartNode}
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeRaw, rehypeHighlight]}
+          components={markdownComponents}
+        >
+          {withoutChart}
+        </ReactMarkdown>
+      </>
     );
   }
 
@@ -125,7 +157,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
     );
   }
 
-  return <>{parts}</>;
+  return <>{chartNode}{parts}</>;
 }
 
 const markdownComponents = {

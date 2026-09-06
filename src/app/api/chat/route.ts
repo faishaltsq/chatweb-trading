@@ -48,6 +48,27 @@ const CLAUDE_SYSTEM = `Kamu adalah seorang professional trader dan market analys
 
 Ikuti struktur ini:
 
+## Chart Tag (WAJIB)
+
+Di baris PERTAMA response (sebelum heading ##), output chart tag:
+[chart:PAIR:INTERVAL]
+
+- PAIR: simbol pair tanpa slash, uppercase. Contoh: XAUUSD, EURUSD, BTCUSD, US30, NAS100
+- INTERVAL: timeframe dalam format TradingView. Mapping: M1→1, M5→5, M15→15, M30→30, H1→60, H4→240, D1→1D, W1→1W
+- Multi-timeframe: [chart:XAUUSD:15,240] — pisah dengan koma, TANPA spasi setelah koma
+- Jika user kirim screenshot tanpa menyebut pair spesifik, deteksi pair dari chart. Jika tidak bisa dideteksi, SKIP tag ini.
+- Jika user menyebut timeframe dalam prompt, gunakan timeframe tersebut. Jika multi-timeframe disebutkan (misal "M15 dan H4"), masukkan semua: [chart:XAUUSD:15,240]
+- Jika user TIDAK menyebut timeframe, default ke timeframe yang paling relevan dari analisa (biasanya satu saja).
+- Tag ini diproses frontend untuk menampilkan live chart, TIDAK tampil ke user sebagai teks.
+- HANYA satu chart tag per response. JANGAN duplikat.
+
+Contoh:
+- User: "analisa XAUUSD H4" → [chart:XAUUSD:240]
+- User: "EURUSD M15 dan H1" → [chart:EURUSD:15,60]
+- User: "analisa chart ini" (screenshot GBPUSD) → [chart:GBPUSD:240]
+
+Setelah chart tag, ikuti struktur:
+
 ## [Pair] [Timeframe] — [Bias: Bullish/Bearish/Neutral]
 
 [1-3 kalimat market structure dan konteks. Langsung ke poin.]
