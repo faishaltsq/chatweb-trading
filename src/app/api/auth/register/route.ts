@@ -3,9 +3,11 @@ import bcrypt from 'bcryptjs';
 import { eq } from 'drizzle-orm';
 import { db } from '@/lib/journal/db';
 import { users } from '@/lib/auth/schema';
+import { initDatabase } from '@/lib/journal/init';
 
 export async function POST(req: Request) {
   try {
+    await initDatabase();
     const { name, email, password } = await req.json();
 
     if (!email || !password) {
