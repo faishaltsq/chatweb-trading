@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --bg-root: #000000;
-  --bg-surface: #0b0e11;
-  --bg-elevated: #131722;
-  --bg-hover: #1a1f2e;
-  --accent: #2962ff;
+  --bg-root: #080a0d;
+  --bg-surface: #0d1117;
+  --bg-elevated: #151a22;
+  --bg-hover: #1d2530;
+  --accent: #4da3ff;
   --accent-dim: #2962ff66;
   --accent-glow: #2962ff22;
   --accent-subtle: #2962ff0d;
@@ -160,9 +160,20 @@ select option {
 /* ====== TradingView grid background ====== */
 .tv-grid-bg {
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    linear-gradient(rgba(132, 165, 196, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(132, 165, 196, 0.07) 1px, transparent 1px);
   background-size: 48px 48px;
+}
+
+.chart-panel {
+  background: linear-gradient(180deg, rgba(22, 30, 40, 0.92), rgba(10, 14, 19, 0.96));
+  background-image: linear-gradient(rgba(118, 153, 187, 0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(118, 153, 187, 0.06) 1px, transparent 1px);
+  background-size: 42px 42px;
+}
+
+.market-line {
+  background: linear-gradient(135deg, transparent 0 8%, rgba(77, 163, 255, .8) 8.2% 8.5%, transparent 8.7% 18%, rgba(38, 166, 154, .75) 18.2% 18.5%, transparent 18.7% 31%, rgba(77, 163, 255, .8) 31.2% 31.5%, transparent 31.7% 44%, rgba(38, 166, 154, .8) 44.2% 44.5%, transparent 44.7% 56%, rgba(77, 163, 255, .75) 56.2% 56.5%, transparent 56.7% 68%, rgba(239, 83, 80, .7) 68.2% 68.5%, transparent 68.7% 82%, rgba(77, 163, 255, .8) 82.2% 82.5%, transparent 82.7%);
+  clip-path: polygon(0 72%, 8% 61%, 18% 68%, 31% 40%, 44% 51%, 56% 28%, 68% 45%, 82% 16%, 100% 25%, 100% 100%, 0 100%);
 }
 
 /* ====== Hairline borders ====== */

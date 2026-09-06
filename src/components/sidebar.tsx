@@ -60,7 +60,7 @@ export default function Sidebar({
 
   return (
     <div
-      className="flex flex-col flex-shrink-0 border-r hairline border-[var(--border)] bg-[var(--bg-surface)] transition-all duration-300 overflow-hidden"
+      className="flex flex-col flex-shrink-0 border-r hairline border-[var(--border)] bg-[var(--bg-surface)]/90 backdrop-blur-xl transition-all duration-300 overflow-hidden"
       style={{ width: collapsed ? '56px' : '260px' }}
     >
       <div className="flex items-center justify-between px-4 py-4 border-b hairline border-[var(--border)] min-h-[57px]">

@@ -91,7 +91,7 @@ export default function InputBar({ onSend, disabled }: InputBarProps) {
       onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
       onDragLeave={() => setDragging(false)}
     >
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         {previews.length > 0 && (
           <div className="flex gap-2 mb-3 flex-wrap">
             {previews.map((p, i) => (
