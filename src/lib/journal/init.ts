@@ -39,5 +39,43 @@ export async function initDatabase() {
       value TEXT,
       PRIMARY KEY (trade_id, column_id)
     );
+
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      name TEXT,
+      email TEXT NOT NULL UNIQUE,
+      email_verified INTEGER,
+      image TEXT,
+      password_hash TEXT,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS accounts (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      type TEXT NOT NULL,
+      provider TEXT NOT NULL,
+      provider_account_id TEXT NOT NULL,
+      refresh_token TEXT,
+      access_token TEXT,
+      expires_at INTEGER,
+      token_type TEXT,
+      scope TEXT,
+      id_token TEXT,
+      session_state TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS sessions (
+      session_token TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      expires INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS verification_tokens (
+      identifier TEXT NOT NULL,
+      token TEXT NOT NULL,
+      expires INTEGER NOT NULL,
+      PRIMARY KEY (identifier, token)
+    );
   `);
 }

@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import { ArrowRight, BookOpen, CandlestickChart, CircleDot, LineChart, Activity } from 'lucide-react';
+import UserButton from '@/components/auth/user-button';
 
 export default function Home() {
   return (
@@ -14,6 +17,7 @@ export default function Home() {
         <div className="flex items-center gap-1 sm:gap-1.5">
           <Link href="/chat" className="px-3 py-2 min-h-[36px] rounded-lg text-xs text-[var(--text-secondary)] hover:text-white hover:bg-white/5 transition-colors flex items-center touch-manipulation">Analysis</Link>
           <Link href="/journal" className="px-3 py-2 min-h-[36px] rounded-lg text-xs text-[var(--text-secondary)] hover:text-white hover:bg-white/5 transition-colors flex items-center touch-manipulation">Journal</Link>
+          <UserButton />
         </div>
       </nav>
       <main className="flex-1 tv-grid-bg relative overflow-hidden px-3.5 py-6 sm:px-6 md:px-10 md:py-12">

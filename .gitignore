@@ -43,6 +43,9 @@ next-env.d.ts
 # local database
 local.db
 
+# Google OAuth credentials JSON
+client_secret*.json
+
 # temp files
 *.xlsx
 *.png

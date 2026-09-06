@@ -16,6 +16,7 @@ import {
   createConversation,
   deleteConversation,
 } from '@/lib/conversations';
+import { SidebarUserSection } from '@/components/auth/user-button';
 
 interface SidebarProps {
   activeId: string | null;
@@ -142,6 +143,7 @@ export default function Sidebar({
               />
             ))}
           </div>
+          <SidebarUserSection />
         </>
       )}
     </div>
