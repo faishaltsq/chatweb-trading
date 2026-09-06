@@ -8,6 +8,7 @@ import {
   type ModelMessage,
   type UIMessage,
 } from 'ai';
+import { fetchPriceSummary } from '@/lib/market/yahoo';
 
 export const maxDuration = 120;
 
@@ -166,6 +167,78 @@ function hasImage(messages: ModelMessage[]): boolean {
   );
 }
 
+// Detect first mentioned asset in the last user message text
+function detectAsset(messages: ModelMessage[]): string | null {
+  const last = messages[messages.length - 1];
+  if (!last || last.role !== 'user' || !Array.isArray(last.content)) return null;
+
+  const text = last.content
+    .filter((p) => p.type === 'text')
+    .map((p) => (p as { text: string }).text)
+    .join(' ');
+
+  if (!text.trim()) return null;
+
+  const PATTERNS: Array<[RegExp, string]> = [
+    // IDX Stocks (common ones, full list)
+    [/\b(BBCA|BBRI|BMRI|BBNI|TLKM|ASII|GOTO|ANTM|UNVR|ICBP|INDF|ADRO|PGAS|BREN|MDKA|EMTK|SIDO|KLBF|CPIN|AMMN|BRPT|TPIA)\b/i, '$1'],
+    // US Stocks
+    [/\b(AAPL|TSLA|NVDA|MSFT|AMZN|GOOGL|META|AMD|NFLX|INTC|PLTR|COIN|BABA|DIS|JNJ|V|MA|BA)\b/i, '$1'],
+    // Crypto (with or without USD suffix)
+    [/\b(BTC|ETH|SOL|BNB|XRP|DOGE)(?:USD|USDT)?\b/i, '$1USD'],
+    // Forex + Commodities
+    [/\b(XAUUSD|XAGUSD|EURUSD|GBPUSD|USDJPY|AUDUSD|USDCAD|NZDUSD|USDCHF|GBPJPY|EURJPY|EURGBP)\b/i, '$1'],
+    // Gold/Silver aliases
+    [/\b(GOLD|EMAS)\b/i, 'XAUUSD'],
+    [/\b(SILVER)\b/i, 'XAGUSD'],
+    // Indices
+    [/\b(NAS100|NASDAQ|NDX)\b/i, 'NAS100'],
+    [/\b(SPX500|SPX|SP500|S&P)\b/i, 'SPX500'],
+    [/\b(US30|DJI|DOW)\b/i, 'US30'],
+    [/\b(NIKKEI|N225)\b/i, 'NIKKEI'],
+    [/\b(DAX)\b/i, 'DAX'],
+    [/\b(USOIL|OIL|CRUDE)\b/i, 'USOIL'],
+  ];
+
+  for (const [pattern, replacement] of PATTERNS) {
+    const m = text.match(pattern);
+    if (m) {
+      return m[0].replace(pattern, replacement).toUpperCase();
+    }
+  }
+
+  return null;
+}
+
+// Inject market data into last user message
+function injectMarketData(messages: ModelMessage[], priceData: string): ModelMessage[] {
+  const copy = [...messages];
+  const lastIdx = copy.length - 1;
+  const last = copy[lastIdx];
+
+  if (!last || last.role !== 'user' || !Array.isArray(last.content)) return copy;
+
+  const existing = last.content
+    .filter((p) => p.type === 'text')
+    .map((p) => (p as { text: string }).text)
+    .join('\n');
+
+  const nonTextParts = last.content.filter((p) => p.type !== 'text');
+
+  copy[lastIdx] = {
+    ...last,
+    content: [
+      ...nonTextParts,
+      {
+        type: 'text' as const,
+        text: `${priceData}\n\n---\n\n${existing}`,
+      },
+    ],
+  };
+
+  return copy;
+}
+
 export async function POST(req: Request) {
   const { messages }: { messages: UIMessage[] } = await req.json();
 
@@ -184,7 +257,6 @@ export async function POST(req: Request) {
 
         const chartAnalysis = await geminiStream.text;
 
-        // Build Claude messages
         const lastUserMsg = modelMessages[modelMessages.length - 1];
         const userTextParts = Array.isArray(lastUserMsg?.content)
           ? lastUserMsg.content.filter((p) => p.type === 'text').map((p) => (p as { text: string }).text).join(' ')
@@ -214,10 +286,28 @@ export async function POST(req: Request) {
 
         writer.merge(toUIMessageStream({ stream: claudeResult.stream }));
       } else {
+        // Detect asset and inject live price data (3 second timeout)
+        let enrichedMessages = modelMessages;
+        const asset = detectAsset(modelMessages);
+
+        if (asset) {
+          try {
+            const priceData = await Promise.race<string | null>([
+              fetchPriceSummary(asset),
+              new Promise<null>((resolve) => setTimeout(() => resolve(null), 3000)),
+            ]);
+            if (priceData) {
+              enrichedMessages = injectMarketData(modelMessages, priceData);
+            }
+          } catch {
+            // Silent — continue without market data injection
+          }
+        }
+
         const claudeResult = streamText({
-          model: openai.chat('ag/claude-sonnet-4-6'),
+          model: openai.chat(CLAUDE_MODEL),
           system: CLAUDE_SYSTEM,
-          messages: modelMessages,
+          messages: enrichedMessages,
           maxOutputTokens: 16000,
         });
 

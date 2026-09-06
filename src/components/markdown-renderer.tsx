@@ -5,7 +5,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
 import RRTable from './rr-table';
-import TVChart from './tv-chart';
+import LWChart from './lw-chart';
 
 interface MarkdownRendererProps {
   content: string;
@@ -140,7 +140,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
   const { cleaned, tables } = extractRRTables(withoutChart);
 
   const chartNode = chart ? (
-    <TVChart key="tv-chart" pair={chart.pair} intervals={chart.intervals} />
+    <LWChart key="lw-chart" pair={chart.pair} intervals={chart.intervals} />
   ) : null;
 
   if (tables.length === 0) {
