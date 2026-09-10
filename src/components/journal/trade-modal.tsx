@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { X, Plus, Trash2, Star, Upload } from 'lucide-react';
 import ChartImageModal from './chart-image-modal';
 import {
@@ -22,6 +22,13 @@ export default function TradeModal({ open, onClose, onSave, initial, title, save
   const [tagInput, setTagInput] = useState('');
   const [showFullImage, setShowFullImage] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (open) {
+      setForm(initial ? { ...initial } : emptyTrade());
+      setTagInput('');
+    }
+  }, [open, initial]);
 
   if (!open) return null;
 

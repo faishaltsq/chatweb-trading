@@ -185,10 +185,10 @@ export default function JournalPage() {
     let tags: string[] = [];
     try { tags = JSON.parse(t.tags || '[]'); } catch { /* */ }
     return {
-      date: t.date,
-      pair: t.pair,
-      direction: t.direction,
-      timeframe: t.timeframe || '',
+      date: t.date || new Date().toISOString().slice(0, 10),
+      pair: t.pair || '',
+      direction: t.direction || 'BUY',
+      timeframe: t.timeframe || 'M15',
       entryPrice: t.entryPrice ?? null,
       stopLoss: t.stopLoss ?? null,
       takeProfit: tps,
@@ -302,14 +302,17 @@ export default function JournalPage() {
         )}
       </main>
 
-      <TradeModal
-        open={modalOpen}
-        onClose={() => { setModalOpen(false); setEditTrade(null); }}
-        onSave={handleSave}
-        initial={editTrade ? tradeToForm(editTrade) : undefined}
-        title={editTrade ? 'Edit Trade' : 'New Trade'}
-        savedPairs={allPairs}
-      />
+      {modalOpen && (
+        <TradeModal
+          key={editTrade?.id || 'new'}
+          open={modalOpen}
+          onClose={() => { setModalOpen(false); setEditTrade(null); }}
+          onSave={handleSave}
+          initial={editTrade ? tradeToForm(editTrade) : undefined}
+          title={editTrade ? 'Edit Trade' : 'New Trade'}
+          savedPairs={allPairs}
+        />
+      )}
 
       <ImportModal
         open={importOpen}
