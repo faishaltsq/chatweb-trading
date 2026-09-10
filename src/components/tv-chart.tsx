@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
+import { ChevronDown, ChevronUp, ExternalLink, ImageUp } from 'lucide-react';
 
 // Specific mapped assets (Forex, Commodities, Indices, Crypto)
 const SYMBOL_MAP: Record<string, string> = {
@@ -147,6 +147,22 @@ function resolveTradingViewSymbol(rawPair: string): string {
   return clean;
 }
 
+function isSymbolResolvable(rawPair: string): boolean {
+  const upper = rawPair.trim().toUpperCase();
+  if (upper.includes(':')) return true;
+  const clean = upper.replace(/[^A-Z0-9]/g, '');
+  if (SYMBOL_MAP[clean]) return true;
+  if (clean.length === 6) {
+    const c1 = clean.slice(0, 3);
+    const c2 = clean.slice(3, 6);
+    if (CURRENCIES.has(c1) && CURRENCIES.has(c2)) return true;
+  }
+  if (clean.endsWith('USDT') && clean.length > 4) return true;
+  if (upper.endsWith('.JK') || upper.startsWith('IDX')) return true;
+  if (/^[A-Z]{1,5}$/.test(clean)) return true;
+  return false;
+}
+
 const INTERVAL_LABELS: Record<string, string> = {
   '1': '1M',
   '5': '5M',
@@ -171,7 +187,7 @@ interface TVChartProps {
 }
 
 export default function TVChart({ pair, intervals = [] }: TVChartProps) {
-  const tvSymbol = resolveTradingViewSymbol(pair);
+  const resolvable = isSymbolResolvable(pair);
   const cleanPair = pair.toUpperCase().trim();
 
   // Timeframes: use parsed intervals if provided, else fallback to standard defaults
@@ -179,6 +195,40 @@ export default function TVChart({ pair, intervals = [] }: TVChartProps) {
   const [activeInterval, setActiveInterval] = useState(availableIntervals[0] || '240');
   const [collapsed, setCollapsed] = useState(false);
 
+  if (!resolvable) {
+    return (
+      <div className="my-3 chart-panel rounded-2xl border hairline border-[var(--border-bright)] overflow-hidden shadow-2xl animate-slideUp bg-[var(--bg-surface)] p-4 sm:p-5">
+        <div className="flex items-start gap-3">
+          <div className="p-2.5 rounded-xl bg-[var(--accent-subtle)] text-[var(--accent)] border hairline border-[var(--accent-dim)] flex-shrink-0">
+            <ImageUp size={20} />
+          </div>
+          <div className="space-y-1.5 flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-sm font-bold text-[var(--text-primary)]">{cleanPair}</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-[var(--text-muted)] font-mono">
+                Chart Tidak Tersedia
+              </span>
+            </div>
+            <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+              Pair ini tidak ditemukan di TradingView widget. Silakan <strong>kirim screenshot chart</strong> ke chat ini agar analisa teknikal bisa dilakukan langsung dari gambar chart Anda.
+            </p>
+            <div className="pt-1 flex items-center gap-2">
+              <a
+                href={`https://www.tradingview.com/chart/?symbol=${encodeURIComponent(cleanPair)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-[11px] text-[var(--accent)] hover:underline font-mono"
+              >
+                Cari &quot;{cleanPair}&quot; di TradingView <ExternalLink size={11} />
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const tvSymbol = resolveTradingViewSymbol(pair);
   const encodedSymbol = encodeURIComponent(tvSymbol);
   const widgetUrl = `https://www.tradingview.com/widgetembed/?frameElementId=tradingview_widget&symbol=${encodedSymbol}&interval=${activeInterval}&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=0b0f14&studies=%5B%5D&theme=dark&style=1&timezone=Etc%2FUTC&withdateranges=1&hideideas=1&hide_top_toolbar=1&hide_legend=0&locale=en`;
 

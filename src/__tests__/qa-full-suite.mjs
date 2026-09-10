@@ -1,5 +1,5 @@
 // QA Comprehensive Test Suite — PNTC (Positive, Negative, Tolerance, Corner) & Edge Cases
-// Tests: Market data, Candle API, Chat API, regex, LWChart fallback, Journal CRUD, HTML/CSS
+// Tests: Market data, Chat API, regex, TradingView chart, Journal CRUD, HTML/CSS
 
 const BASE_URL = 'http://localhost:3000';
 
@@ -159,59 +159,10 @@ assert('DETECT', 'T-02: Punctuation: "nasdaq?"', detectAsset('nasdaq?'), 'NAS100
 assert('DETECT', 'T-03: Mixed case: "BtCuSd"', detectAsset('analisa BtCuSd sekarang'), 'BTCUSD');
 
 // ====================================================================
-// SUITE 3: /api/market/candles API Endpoint Tests (QA-03)
+// SUITE 3: TradingView Scanner Live Price Feed (QA-02)
 // ====================================================================
 async function runAsyncTests() {
-  console.log('\n--- SUITE 3: /api/market/candles HTTP Endpoint (QA-03) ---');
-
-  // Test 1: Missing pair -> 400
-  try {
-    const r = await fetch(`${BASE_URL}/api/market/candles`);
-    assert('API-CANDLES', 'N-01: Missing pair param returns 400', r.status, 400);
-  } catch(e) { assert('API-CANDLES', 'N-01: Request error', e.message, ''); }
-
-  // Test 2: Valid IDX stock (BBCA) -> 200, 100+ candles, price ~6700
-  try {
-    const r = await fetch(`${BASE_URL}/api/market/candles?pair=BBCA&interval=1D`);
-    assert('API-CANDLES', 'P-01: BBCA status 200', r.status, 200);
-    const d = await r.json();
-    assert('API-CANDLES', 'P-02: BBCA has candles array', Array.isArray(d.candles), true);
-    assert('API-CANDLES', 'P-03: BBCA candles count >= 50', d.candles?.length >= 50, true);
-    assert('API-CANDLES', 'P-04: BBCA price ~6700', Math.abs(d.meta?.price - 6700) <= 200, true);
-    assert('API-CANDLES', 'P-05: BBCA currency IDR', d.meta?.currency, 'IDR');
-    assert('API-CANDLES', 'P-06: BBCA isDailyOnly is true', d.meta?.isDailyOnly, true);
-    // Candle structure validation
-    const c0 = d.candles[0];
-    assert('API-CANDLES', 'P-07: Candle has time in seconds (UTCTimestamp)', typeof c0.time === 'number' && c0.time > 1000000000, true);
-    assert('API-CANDLES', 'P-08: Candle OHLC are numbers', typeof c0.open === 'number' && typeof c0.high === 'number' && typeof c0.low === 'number' && typeof c0.close === 'number', true);
-  } catch(e) { assert('API-CANDLES', 'P: BBCA error', e.message, ''); }
-
-  // Test 3: Gold (XAUUSD) -> price in 44xx range (spot from TV)
-  try {
-    const r = await fetch(`${BASE_URL}/api/market/candles?pair=XAUUSD&interval=1D`);
-    assert('API-CANDLES', 'P-09: XAUUSD status 200', r.status, 200);
-    const d = await r.json();
-    assert('API-CANDLES', 'P-10: XAUUSD price in 44xx (TradingView spot)', d.meta?.price >= 4400 && d.meta?.price <= 4500, true);
-  } catch(e) { assert('API-CANDLES', 'P: XAUUSD error', e.message, ''); }
-
-  // Test 4: Nasdaq (NAS100) -> price in 29xxx range
-  try {
-    const r = await fetch(`${BASE_URL}/api/market/candles?pair=NAS100&interval=1D`);
-    assert('API-CANDLES', 'P-11: NAS100 status 200', r.status, 200);
-    const d = await r.json();
-    assert('API-CANDLES', 'P-12: NAS100 price ~29xxx', d.meta?.price >= 28000 && d.meta?.price <= 31000, true);
-  } catch(e) { assert('API-CANDLES', 'P: NAS100 error', e.message, ''); }
-
-  // Test 5: Invalid asset -> 404
-  try {
-    const r = await fetch(`${BASE_URL}/api/market/candles?pair=XYZNOTEXIST999`);
-    assert('API-CANDLES', 'N-02: Nonexistent asset returns 404', r.status, 404);
-  } catch(e) { assert('API-CANDLES', 'N-02: Error', e.message, ''); }
-
-  // ====================================================================
-  // SUITE 4: TradingView Scanner Live Price Feed (QA-02)
-  // ====================================================================
-  console.log('\n--- SUITE 4: TradingView Scanner Live Price (QA-02) ---');
+  console.log('\n--- SUITE 3: TradingView Scanner Live Price (QA-02) ---');
 
   const tvPairs = [
     ['OANDA:XAUUSD', (p) => p >= 4400 && p <= 4500, 'Gold Spot ~44xx'],
