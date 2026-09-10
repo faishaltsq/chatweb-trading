@@ -21,14 +21,6 @@ export default function JournalCharts({ trades }: ChartsProps) {
   const [tab, setTab] = useState<'equity' | 'monthly' | 'distribution' | 'calendar'>('equity');
   const closed = trades.filter((t) => t.status !== 'OPEN').sort((a, b) => a.date.localeCompare(b.date));
 
-  if (closed.length === 0) {
-    return (
-      <div className="bg-[var(--bg-surface)] border hairline border-[var(--border)] rounded-2xl px-6 py-10 text-center text-[var(--text-muted)] text-xs mb-4">
-        Charts will appear after you close some trades.
-      </div>
-    );
-  }
-
   const equityData = (() => {
     let cum = 0;
     return closed.map((t) => {
@@ -90,7 +82,13 @@ export default function JournalCharts({ trades }: ChartsProps) {
       </div>
 
       <div className={`p-3 sm:p-5 ${tab === 'calendar' ? '' : 'h-60 sm:h-72'}`}>
-        {tab === 'equity' && (
+        {tab !== 'calendar' && closed.length === 0 && (
+          <div className="flex items-center justify-center h-full text-[var(--text-muted)] text-xs">
+            Charts will appear after you close some trades.
+          </div>
+        )}
+
+        {tab === 'equity' && closed.length > 0 && (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={equityData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" />
@@ -102,7 +100,7 @@ export default function JournalCharts({ trades }: ChartsProps) {
           </ResponsiveContainer>
         )}
 
-        {tab === 'monthly' && (
+        {tab === 'monthly' && closed.length > 0 && (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={monthlyData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" />
@@ -118,7 +116,7 @@ export default function JournalCharts({ trades }: ChartsProps) {
           </ResponsiveContainer>
         )}
 
-        {tab === 'distribution' && (
+        {tab === 'distribution' && closed.length > 0 && (
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
