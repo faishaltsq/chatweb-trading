@@ -6,7 +6,8 @@ import {
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from 'recharts';
 import { useState } from 'react';
-import { BarChart3, TrendingUp, PieChartIcon } from 'lucide-react';
+import { BarChart3, TrendingUp, PieChartIcon, CalendarDays } from 'lucide-react';
+import PnlCalendar from './pnl-calendar';
 
 interface ChartsProps {
   trades: Trade[];
@@ -17,7 +18,7 @@ const TV_BEAR = '#ef5350';
 const TV_COLORS = { WIN: TV_BULL, LOSS: TV_BEAR, BREAKEVEN: '#ff9800', OPEN: '#434651' };
 
 export default function JournalCharts({ trades }: ChartsProps) {
-  const [tab, setTab] = useState<'equity' | 'monthly' | 'distribution'>('equity');
+  const [tab, setTab] = useState<'equity' | 'monthly' | 'distribution' | 'calendar'>('equity');
   const closed = trades.filter((t) => t.status !== 'OPEN').sort((a, b) => a.date.localeCompare(b.date));
 
   if (closed.length === 0) {
@@ -55,6 +56,7 @@ export default function JournalCharts({ trades }: ChartsProps) {
     { id: 'equity' as const, label: 'Equity Curve', icon: TrendingUp },
     { id: 'monthly' as const, label: 'Monthly PnL', icon: BarChart3 },
     { id: 'distribution' as const, label: 'Win / Loss', icon: PieChartIcon },
+    { id: 'calendar' as const, label: 'PNL Calendar', icon: CalendarDays },
   ];
 
   const tooltipStyle = {
@@ -87,7 +89,7 @@ export default function JournalCharts({ trades }: ChartsProps) {
         ))}
       </div>
 
-      <div className="p-3 sm:p-5 h-60 sm:h-72">
+      <div className={`p-3 sm:p-5 ${tab === 'calendar' ? '' : 'h-60 sm:h-72'}`}>
         {tab === 'equity' && (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={equityData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
@@ -136,6 +138,10 @@ export default function JournalCharts({ trades }: ChartsProps) {
               <Tooltip contentStyle={tooltipStyle} />
             </PieChart>
           </ResponsiveContainer>
+        )}
+
+        {tab === 'calendar' && (
+          <PnlCalendar trades={trades} />
         )}
       </div>
     </div>
