@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { X, Plus, Trash2, Star, Upload } from 'lucide-react';
+import ChartImageModal from './chart-image-modal';
 import {
   TIMEFRAMES, STATUSES, DIRECTIONS, EMOTIONS,
   type TradeFormData, emptyTrade,
@@ -19,6 +20,7 @@ interface TradeModalProps {
 export default function TradeModal({ open, onClose, onSave, initial, title, savedPairs = [] }: TradeModalProps) {
   const [form, setForm] = useState<TradeFormData>(initial || emptyTrade());
   const [tagInput, setTagInput] = useState('');
+  const [showFullImage, setShowFullImage] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   if (!open) return null;
@@ -221,7 +223,13 @@ export default function TradeModal({ open, onClose, onSave, initial, title, save
           <Field label="Chart Screenshot">
             {form.chartUrl ? (
               <div className="relative group">
-                <img src={form.chartUrl} alt="chart" className="max-h-40 rounded-xl border hairline border-[var(--border)]" />
+                <img
+                  src={form.chartUrl}
+                  alt="chart"
+                  onClick={() => setShowFullImage(true)}
+                  className="max-h-40 rounded-xl border hairline border-[var(--border)] cursor-pointer hover:opacity-90 transition-opacity"
+                  title="Klik untuk memperbesar"
+                />
                 <button type="button" onClick={() => set('chartUrl', '')}
                   className="absolute top-1 right-1 p-1.5 rounded-lg bg-black/60 text-[var(--bear)] opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
                   <X size={14} />
@@ -257,6 +265,13 @@ export default function TradeModal({ open, onClose, onSave, initial, title, save
             </button>
           </div>
         </form>
+
+        <ChartImageModal
+          open={showFullImage}
+          onClose={() => setShowFullImage(false)}
+          imageUrl={form.chartUrl}
+          title={`${form.pair || 'Trade'} Chart Screenshot`}
+        />
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { type Trade, type CustomColumn } from '@/lib/journal/schema';
 import { statusColor, dirColor } from '@/lib/journal/constants';
 import { Star, GripVertical, Pencil, Trash2, Image, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
+import ChartImageModal from './chart-image-modal';
 
 interface JournalTableProps {
   trades: Trade[];
@@ -24,6 +25,8 @@ export default function JournalTable({
   onInlineUpdate,
   onCustomValueUpdate,
 }: JournalTableProps) {
+  const [previewImage, setPreviewImage] = useState<{ url: string; title: string } | null>(null);
+
   if (trades.length === 0) {
     return (
       <div className="text-center py-20 text-[var(--text-muted)] text-sm">
@@ -46,6 +49,7 @@ export default function JournalTable({
             customValues={customValues[trade.id] || {}}
             onEdit={onEdit}
             onDelete={onDelete}
+            onPreviewImage={setPreviewImage}
           />
         ))}
       </div>
@@ -90,11 +94,19 @@ export default function JournalTable({
                 onDelete={onDelete}
                 onInlineUpdate={onInlineUpdate}
                 onCustomValueUpdate={onCustomValueUpdate}
+                onPreviewImage={setPreviewImage}
               />
             ))}
           </tbody>
         </table>
       </div>
+
+      <ChartImageModal
+        open={!!previewImage}
+        onClose={() => setPreviewImage(null)}
+        imageUrl={previewImage?.url || ''}
+        title={previewImage?.title}
+      />
     </>
   );
 }
@@ -108,12 +120,14 @@ function TradeCard({
   customValues,
   onEdit,
   onDelete,
+  onPreviewImage,
 }: {
   trade: Trade;
   customColumns: CustomColumn[];
   customValues: Record<string, string>;
   onEdit: (t: Trade) => void;
   onDelete: (id: string) => void;
+  onPreviewImage?: (img: { url: string; title: string }) => void;
 }) {
   const tps = (() => {
     try { return JSON.parse(trade.takeProfit || '[]'); } catch { return []; }
@@ -204,6 +218,16 @@ function TradeCard({
 
         {/* Action buttons with touch targets */}
         <div className="flex items-center gap-1 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+          {trade.chartUrl && (
+            <button
+              type="button"
+              onClick={() => onPreviewImage?.({ url: trade.chartUrl!, title: `${trade.pair} (${trade.direction}) - ${trade.date}` })}
+              className="min-w-[34px] min-h-[34px] w-[34px] h-[34px] rounded-lg bg-white/5 hover:bg-white/10 transition-colors flex items-center justify-center touch-manipulation overflow-hidden border hairline border-[var(--border)] p-0.5"
+              title="Lihat screenshot chart"
+            >
+              <img src={trade.chartUrl} alt="thumb" className="w-full h-full object-cover rounded-md" />
+            </button>
+          )}
           <button
             onClick={() => onEdit(trade)}
             className="min-w-[34px] min-h-[34px] rounded-lg bg-white/5 hover:bg-white/10 text-[var(--text-secondary)] hover:text-white transition-colors flex items-center justify-center touch-manipulation"
@@ -235,6 +259,7 @@ function TradeRow({
   onDelete,
   onInlineUpdate,
   onCustomValueUpdate,
+  onPreviewImage,
 }: {
   trade: Trade;
   customColumns: CustomColumn[];
@@ -243,6 +268,7 @@ function TradeRow({
   onDelete: (id: string) => void;
   onInlineUpdate: (id: string, field: string, value: unknown) => void;
   onCustomValueUpdate?: (tradeId: string, columnId: string, value: string) => void;
+  onPreviewImage?: (img: { url: string; title: string }) => void;
 }) {
   const tps = (() => {
     try { return JSON.parse(trade.takeProfit || '[]'); } catch { return []; }
@@ -316,7 +342,22 @@ function TradeRow({
         </div>
       </td>
       <td className="px-3 py-2.5 text-center">
-        {trade.chartUrl ? <Image size={12} className="text-[var(--info)] mx-auto" /> : <span className="text-[var(--text-muted)]/30">-</span>}
+        {trade.chartUrl ? (
+          <button
+            type="button"
+            onClick={() => onPreviewImage?.({ url: trade.chartUrl!, title: `${trade.pair} (${trade.direction}) - ${trade.date}` })}
+            className="group inline-flex items-center justify-center p-0.5 rounded-lg hover:ring-2 hover:ring-[var(--accent)] transition-all touch-manipulation"
+            title="Klik untuk memperbesar chart"
+          >
+            <img
+              src={trade.chartUrl}
+              alt="chart"
+              className="w-7 h-7 object-cover rounded-md border hairline border-[var(--border)] group-hover:scale-105 transition-transform"
+            />
+          </button>
+        ) : (
+          <span className="text-[var(--text-muted)]/30">-</span>
+        )}
       </td>
       {customColumns.map((col) => (
         <td key={col.id} className="px-3 py-2.5 text-[var(--text-secondary)]">

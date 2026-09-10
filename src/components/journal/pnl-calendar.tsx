@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, Image as ImageIcon } from 'lucide-react';
 import { type Trade } from '@/lib/journal/schema';
+import ChartImageModal from './chart-image-modal';
 
 interface Props {
   trades: Trade[];
@@ -27,6 +28,7 @@ export default function PnlCalendar({ trades }: Props) {
     return new Date(now.getFullYear(), now.getMonth(), 1);
   });
   const [selected, setSelected] = useState<string | null>(null);
+  const [previewImage, setPreviewImage] = useState<{ url: string; title: string } | null>(null);
 
   const closed = useMemo(() => trades.filter((t) => t.status !== 'OPEN'), [trades]);
 
@@ -202,6 +204,16 @@ export default function PnlCalendar({ trades }: Props) {
                 {t.pnlPips != null && (
                   <span className="text-[var(--text-muted)] font-mono">{t.pnlPips > 0 ? '+' : ''}{t.pnlPips}p</span>
                 )}
+                {t.chartUrl && (
+                  <button
+                    type="button"
+                    onClick={() => setPreviewImage({ url: t.chartUrl!, title: `${t.pair} (${t.direction}) - ${t.date}` })}
+                    className="p-1 rounded bg-white/5 hover:bg-white/15 text-[var(--accent)] transition-colors flex items-center justify-center flex-shrink-0 touch-manipulation"
+                    title="Lihat screenshot chart"
+                  >
+                    <ImageIcon size={12} />
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -217,6 +229,13 @@ export default function PnlCalendar({ trades }: Props) {
           )}
         </div>
       )}
+
+      <ChartImageModal
+        open={!!previewImage}
+        onClose={() => setPreviewImage(null)}
+        imageUrl={previewImage?.url || ''}
+        title={previewImage?.title}
+      />
     </div>
   );
 }
