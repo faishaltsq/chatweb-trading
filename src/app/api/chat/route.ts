@@ -9,6 +9,7 @@ import {
   type UIMessage,
 } from 'ai';
 import { fetchPriceSummary } from '@/lib/market/yahoo';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 
 export const maxDuration = 120;
 
@@ -240,6 +241,34 @@ function injectMarketData(messages: ModelMessage[], priceData: string): ModelMes
 }
 
 export async function POST(req: Request) {
+  const ip = getClientIp(req);
+
+  // Rate limit: 10 msg/minute
+  const burst = checkRateLimit('chat:burst', ip, { windowMs: 60 * 1000, max: 10 });
+  if (!burst.success) {
+    const waitSec = Math.ceil(burst.resetMs / 1000);
+    return new Response(JSON.stringify({ error: `Terlalu banyak permintaan. Silakan tunggu ${waitSec} detik.` }), {
+      status: 429,
+      headers: {
+        'Content-Type': 'application/json',
+        'Retry-After': String(waitSec),
+      },
+    });
+  }
+
+  // Rate limit: 50 msg/hour
+  const hourly = checkRateLimit('chat:hourly', ip, { windowMs: 60 * 60 * 1000, max: 50 });
+  if (!hourly.success) {
+    const waitMin = Math.ceil(hourly.resetMs / 60000);
+    return new Response(JSON.stringify({ error: `Batas pesan per jam tercapai (50 pesan/jam). Silakan tunggu ${waitMin} menit.` }), {
+      status: 429,
+      headers: {
+        'Content-Type': 'application/json',
+        'Retry-After': String(Math.ceil(hourly.resetMs / 1000)),
+      },
+    });
+  }
+
   const { messages }: { messages: UIMessage[] } = await req.json();
 
   const modelMessages = fixFileMessages(await convertToModelMessages(messages));

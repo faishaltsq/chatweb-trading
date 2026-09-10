@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, type UIMessage } from 'ai';
 import { Sparkles } from 'lucide-react';
@@ -58,16 +58,28 @@ function useWakeLock(active: boolean) {
 export default function ChatArea({ conversationId, onTitleUpdate }: ChatAreaProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
   const titleSetRef = useRef(false);
+  const [rateLimitError, setRateLimitError] = useState<string | null>(null);
 
   const { messages, sendMessage, status } = useChat({
     id: conversationId,
     messages: getMessages(conversationId) as UIMessage[],
     transport: new DefaultChatTransport({
       api: '/api/chat',
-      fetch: (input, init) => {
+      fetch: async (input, init) => {
         const { signal, ...rest } = init || {};
         void signal;
-        return fetch(input, rest);
+        const res = await fetch(input, rest);
+        if (res.status === 429) {
+          try {
+            const data = await res.clone().json();
+            setRateLimitError(data.error || 'Terlalu banyak permintaan. Silakan tunggu beberapa saat.');
+          } catch {
+            setRateLimitError('Terlalu banyak permintaan. Silakan tunggu beberapa saat.');
+          }
+        } else if (res.ok) {
+          setRateLimitError(null);
+        }
+        return res;
       },
     }),
   });
@@ -100,6 +112,7 @@ export default function ChatArea({ conversationId, onTitleUpdate }: ChatAreaProp
 
   const handleSend = useCallback(
     (text: string, files?: FileList) => {
+      setRateLimitError(null);
       sendMessage({ text, files });
     },
     [sendMessage]
@@ -163,6 +176,19 @@ export default function ChatArea({ conversationId, onTitleUpdate }: ChatAreaProp
           </div>
         )}
       </div>
+
+      {rateLimitError && (
+        <div className="mx-3 sm:mx-4 mb-2 p-2.5 rounded-xl bg-[var(--bear)]/10 border hairline border-[var(--bear)]/30 text-[var(--bear)] text-xs flex items-center justify-between gap-2 animate-fadeIn">
+          <span>{rateLimitError}</span>
+          <button
+            type="button"
+            onClick={() => setRateLimitError(null)}
+            className="text-xs opacity-70 hover:opacity-100 touch-manipulation px-1"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       <InputBar onSend={handleSend} disabled={isStreaming} />
     </div>

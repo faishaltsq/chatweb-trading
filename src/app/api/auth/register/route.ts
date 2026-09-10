@@ -4,9 +4,16 @@ import { eq } from 'drizzle-orm';
 import { db } from '@/lib/journal/db';
 import { users } from '@/lib/auth/schema';
 import { initDatabase } from '@/lib/journal/init';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 
 export async function POST(req: Request) {
   try {
+    const ip = getClientIp(req);
+    const limit = checkRateLimit('auth:register', ip, { windowMs: 60 * 60 * 1000, max: 5 });
+    if (!limit.success) {
+      return NextResponse.json({ error: 'Terlalu banyak pendaftaran akun. Silakan coba lagi nanti.' }, { status: 429 });
+    }
+
     await initDatabase();
     const { name, email, password } = await req.json();
 
